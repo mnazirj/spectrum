@@ -9,6 +9,23 @@ const routes = [
       return import("../views/HomeView.vue");
     },
   },
+  {
+    path: "/dashboard",
+    name: "Dashboard",
+    component: () => import("@/views/dashboard/DashboardView.vue"),
+    children: [
+      {
+        path: "overview",
+        name: "Overview",
+        component: () => import("@/components/dashboard/Overview.vue"),
+      },
+      {
+        path: "storage",
+        name: "Storage",
+        component: () => import("@/components/dashboard/Storage.vue"),
+      },
+    ],
+  },
 ];
 
 const router = createRouter({

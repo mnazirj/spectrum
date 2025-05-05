@@ -5,7 +5,40 @@
     box-sizing: border-box;
     /* outline: 1px solid red; */
 }
+:root{
+    --primary-color-500: #1D3223;
+  --primary-text-color-500: #ffffff;
+    --primary-color-600: #0F2312;
+  --primary-text-color-600: #e7e7e7;
+}
 
 .logo-text {
     letter-spacing: 10px;
+}
+
+/* Dashboard Section */
+.bg-main{
+    
+    background: var(--primary-color-500) !important;
+}
+.bg-main-700{
+background: var(--primary-color-600) !important;
+}
+.text-main{
+    color: var(--primary-color-500) !important;
+}
+.width-10{
+    width: 10%;
+}
+.width-20{
+    width: 20%;
+}
+.width-60{
+    width: 60%;
+}
+.width-80{
+    width: 80%;
+}
+.width-90{
+    width: 90%;
 }
