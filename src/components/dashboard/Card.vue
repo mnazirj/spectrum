@@ -1,23 +1,45 @@
 <template>
   <div class="card rounded-3 shadow-3 my-2">
     <div
-      class="d-flex justify-content-center align-items-center flex-wrap  rounded-3 h-100 p-2 bg-main text-white"
+      class="d-flex justify-content-center align-items-center flex-wrap rounded-3 h-100 p-2 bg-main text-white"
     >
       <div class="w-100 d-flex justify-content-center">
         <div class="w-50 d-flex justify-content-center align-items-center">
-          <i :class="[props.icon, 'icon']" :style="{ fontSize: '6rem' }" />
+          <i :class="[props.icon.value, 'icon']" :style="{ fontSize: props.icon.size }" />
         </div>
 
         <div
           class="w-50 d-flex flex-wrap justify-content-center align-items-center"
         >
           <div class="w-100 d-flex justify-content-center my-1">
-            <span class="fs-2" :style="{ fontWeight: 'bold' }">{{
-              props.value
-            }}</span>
+            <span
+              :class="[
+                'text-center',
+                props.value.textWrap ? 'text-wrap' : 'text-nowrap',
+              ]"
+              :style="{
+                fontWeight: props.value.bold ? 'bold' : 'normal',
+                fontSize: props.value.fontSize || '1rem',
+              }"
+              >{{
+                props.value.withComma
+                  ? Intl.NumberFormat("en-US").format(props.value.value)
+                  : props.value.value
+              }}{{ props.value.symbol }}</span
+            >
           </div>
           <div class="w-100 d-flex justify-content-center my-1">
-            <span class="fs-4">{{ props.label }}</span>
+            <span
+              :class="[
+                'text-center',
+                props.label.textWrap ? 'text-wrap' : 'text-nowrap',
+              ]"
+              :style="{
+                fontWeight: props.label.bold ? 'bold' : 'normal',
+                fontSize: props.label.fontSize || '1rem',
+              }"
+              >{{ props.label.value }}</span
+            >
           </div>
         </div>
       </div>
@@ -30,30 +52,51 @@ import { defineProps } from "vue";
 
 const props = defineProps({
   value: {
-    type: String,
+    Type: Object,
     required: true,
-    default: "",
+    default: {
+      value: 0,
+      fontSize: "1rem",
+      textWrap: true,
+      bold: true,
+      withComma: false,
+      symbol:'',
+    },
   },
   icon: {
-    type: String,
+    Type: Object,
     required: true,
-    default: "pi pi-user",
+    default: {
+      value:'pi pi-user',
+      size:'1rem',
+    },
   },
   label: {
-    type: String,
+    Type: Object,
     required: true,
-    default: "Default",
+    default: {
+      value: "Default",
+      fontSize: "1rem",
+      textWrap: true,
+      bold: true,
+    },
   },
 });
 </script>
 
 <style scoped>
 .card {
-  width: 14rem;
-  height: 10rem;
   transition: all 0.2s ease;
   transform-origin: center;
 }
+/* .card-4 {
+  width: 14rem;
+  height: 10rem;
+}
+.card-3{
+ width: rem;
+  height: 10rem;
+} */
 @media (min-width: 1024px) {
   /* .card {
     width: 16rem ;

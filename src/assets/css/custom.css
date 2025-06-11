@@ -31,10 +31,11 @@
     background-color: var(--p-zinc-900) !important;
 }
 :root{
-    --primary-color-500: #1D3223;
+    --primary-color-500: var(--p-zinc-900);
   --primary-text-color-500: #ffffff;
-    --primary-color-600: #0F2312;
-  --primary-text-color-600: #e7e7e7;
+    --primary-color-600: var(--p-zinc-700);
+  --primary-text-color-600: #d0d0d0;
+  
 }
 
 .logo-text {
@@ -50,7 +51,7 @@
 background: var(--primary-color-600) !important;
 }
 .text-main{
-    color: var(--primary-color-500) !important;
+    color: var(--primary-text-color-500) !important;
 }
 .width-10{
     width: 10%;
@@ -63,6 +64,9 @@ background: var(--primary-color-600) !important;
 }
 .width-80{
     width: 80%;
+}
+.width-70{
+    width: 70%;
 }
 .width-90{
     width: 90%;

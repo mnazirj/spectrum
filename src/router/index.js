@@ -41,9 +41,21 @@ const routes = [
     ],
   },
   {
+    path: "/login",
+    name: "Login",
+    component: () => import("@/views/dashboard/Login.vue"),
+  },
+  {
     path: "/dashboard",
     name: "Dashboard",
     component: () => import("@/views/dashboard/DashboardView.vue"),
+    beforeEnter: (to, from, next) => {
+      if (to.name == "Dashboard") {
+        next({ name: "Overview" });
+      } else {
+        next();
+      }
+    },
     children: [
       {
         path: "overview",
@@ -54,6 +66,67 @@ const routes = [
         path: "storage",
         name: "Storage",
         component: () => import("@/components/dashboard/Storage.vue"),
+      },
+      {
+        path: "category",
+        name: "Category",
+        component: () => import("@/components/dashboard/Category.vue"),
+      },
+      {
+        path: "company",
+        name: "Company",
+        component: () => import("@/components/dashboard/Company.vue"),
+      },
+      {
+        path: "order",
+        name: "Order",
+        component: () => import("@/components/dashboard/Order.vue"),
+      },
+      {
+        path: "sales",
+        name: "Sales",
+        component: () => import("@/components/dashboard/Sales.vue"),
+      },
+      {
+        path: "payment",
+        name: "Payment",
+        component: () => import("@/components/dashboard/Payment.vue"),
+      },
+      {
+        path: "website",
+        name: "Website",
+        component: () => import("@/components/dashboard/Website.vue"),
+      },
+      {
+        path: "customer",
+        name: "Customer",
+        component: () => import("@/components/dashboard/Customer.vue"),
+      },
+      {
+        path: "performance",
+        name: "Performance",
+        component: () => import("@/components/dashboard/Performance.vue"),
+      },
+      {
+        path: "marketing&promotions",
+        name: "Marketing&Promotions",
+        component: () =>
+          import("@/components/dashboard/Marketing&Promotions.vue"),
+      },
+      {
+        path: "profile",
+        name: "Profile",
+        component: () => import("@/components/dashboard/Profile.vue"),
+      },
+      {
+        path: "settings",
+        name: "Settings",
+        component: () => import("@/components/dashboard/Settings.vue"),
+      },
+      {
+        path: "notification",
+        name: "Notification",
+        component: () => import("@/components/dashboard/Notification.vue"),
       },
     ],
   },

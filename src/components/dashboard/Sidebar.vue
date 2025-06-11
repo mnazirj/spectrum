@@ -3,7 +3,9 @@
     <div id="sidebar-nav" class="h-100">
       <div class="d-flex flex-column p-2 h-100 bg-main text-white">
         <div id="header" class="ps-2 d-flex flex-wrap align-items-center">
-          <span class="fs-2 w-75 ps-2" :style="{ fontFamily: 'Rokkitt' }">MENU</span>
+          <span class="fs-2 w-75 ps-1" :style="{ fontFamily: 'Rokkitt' }"
+            >MENU</span
+          >
           <div class="w-25 d-flex justify-content-end">
             <i
               class="pi pi-angle-double-left cursor-pointer"
@@ -15,7 +17,7 @@
         </div>
         <div
           id="body"
-          class="d-flex justify-content-center align-items-center mt-3 p-1 ps-3"
+          class="d-flex justify-content-center align-items-center mt-3 p-1 ps-2"
         >
           <ul class="list-group m-2 w-100 text-nowrap">
             <router-link
@@ -25,7 +27,7 @@
               ]"
               :to="{ name: 'Overview' }"
             >
-              <i class="pi pi-objects-column mx-2" />
+              <i class="pi pi-objects-column mx-1" />
               <span class="mx-1">Overview</span>
             </router-link>
             <li
@@ -39,7 +41,7 @@
                 @click="changeIcon('list1Icon', 'list1')"
               >
                 <div>
-                  <i class="pi pi-shop mx-2" />
+                  <i class="pi pi-shop mx-1" />
                   <span class="mx-1">Invontry Mangment</span>
                 </div>
                 <i id="list1Icon" class="pi pi-chevron-right text-end" />
@@ -54,27 +56,29 @@
                     'list-group-item prim-list-item bg-main text-white border-0 p-1  my-2 rounded-2',
                     isActive('Storage') ? 'active' : '',
                   ]"
-                  :to="{ name : 'Storage'}"
+                  :to="{ name: 'Storage' }"
                 >
-                  <i class="pi pi-warehouse mx-2" />
+                  <i class="pi pi-warehouse mx-1" />
                   <span class="mx-1">Storage</span>
                 </router-link>
                 <router-link
                   :class="[
                     'list-group-item prim-list-item bg-main text-white border-0 p-1  my-2 rounded-2',
-                    isActive('') ? 'active' : '',
+                    isActive('Category') ? 'active' : '',
                   ]"
+                  :to="{ name: 'Category' }"
                 >
-                  <i class="pi pi-filter-fill mx-2" />
+                  <i class="pi pi-filter-fill mx-1" />
                   <span class="mx-1">Categories</span>
                 </router-link>
                 <router-link
                   :class="[
                     'list-group-item prim-list-item bg-main text-white border-0 p-1  my-2 rounded-2',
-                    isActive('') ? 'active' : '',
+                    isActive('Company') ? 'active' : '',
                   ]"
+                  :to="{ name: 'Company' }"
                 >
-                  <i class="pi pi-building mx-2" />
+                  <i class="pi pi-building mx-1" />
                   <span class="mx-1">Companies</span>
                 </router-link>
               </ul>
@@ -82,47 +86,72 @@
             <router-link
               :class="[
                 'list-group-item prim-list-item bg-main text-white border-0 p-1 my-2 rounded-2',
-                isActive('') ? 'active' : '',
+                isActive('Order') ? 'active' : '',
               ]"
+              :to="{ name: 'Order' }"
             >
-              <i class="pi pi-shopping-cart mx-2" />
+              <i class="pi pi-shopping-cart mx-1" />
               <span class="mx-1">Order Mangment</span>
             </router-link>
             <router-link
               :class="[
                 'list-group-item prim-list-item bg-main text-white border-0 p-1 my-2 rounded-2',
-                isActive('') ? 'active' : '',
+                isActive('Customer') ? 'active' : '',
               ]"
+              :to="{ name: 'Customer' }"
             >
-              <i class="pi pi-users mx-2" />
+              <i class="pi pi-users mx-1" />
               <span class="mx-1">Customer Mangment</span>
             </router-link>
             <router-link
               :class="[
                 'list-group-item prim-list-item bg-main text-white border-0 p-1 my-2 rounded-2',
-                isActive('') ? 'active' : '',
+                isActive('Sales') ? 'active' : '',
               ]"
+              :to="{ name: 'Sales' }"
             >
-              <i class="pi pi-chart-line mx-2" />
+              <i class="pi pi-chart-line mx-1" />
               <span class="mx-1">Sales Analytics</span>
             </router-link>
             <router-link
               :class="[
                 'list-group-item prim-list-item bg-main text-white border-0 p-1 my-2 rounded-2',
-                isActive('') ? 'active' : '',
+                isActive('Payment') ? 'active' : '',
               ]"
+              :to="{ name: 'Payment' }"
             >
-              <i class="pi pi-wallet mx-2" />
+              <i class="pi pi-wallet mx-1" />
               <span class="mx-1">Payment Analytics</span>
             </router-link>
             <router-link
               :class="[
                 'list-group-item prim-list-item bg-main text-white border-0 p-1 my-2 rounded-2',
-                isActive('') ? 'active' : '',
+                isActive('Website') ? 'active' : '',
               ]"
+              :to="{ name: 'Website' }"
             >
-              <i class="pi pi-gauge mx-2" />
+              <i class="fa-solid fa-pager mx-1" />
+              <span class="mx-1">Website Analytics</span>
+            </router-link>
+            <router-link
+              :class="[
+                'list-group-item prim-list-item bg-main text-white border-0 p-1 my-2 rounded-2',
+                isActive('Performance') ? 'active' : '',
+              ]"
+              :to="{ name: 'Performance' }"
+            >
+              <i class="pi pi-gauge mx-1" />
               <span class="mx-1">Performance Indictors</span>
+            </router-link>
+            <router-link
+              :class="[
+                'list-group-item prim-list-item bg-main text-white border-0 p-1 my-2 rounded-2',
+                isActive('Marketing&Promotions') ? 'active' : '',
+              ]"
+              :to="{ name: 'Marketing&Promotions' }"
+            >
+              <i class="pi pi-money-bill mx-1" />
+              <span class="mx-1">Marketing & Promotions</span>
             </router-link>
             <router-link
               :class="[
@@ -130,7 +159,7 @@
                 isActive('') ? 'active' : '',
               ]"
             >
-              <i class="pi pi-exclamation-triangle mx-2" />
+              <i class="pi pi-exclamation-triangle mx-1" />
               <span class="mx-1">Custome Reports</span>
             </router-link>
           </ul>
@@ -173,8 +202,8 @@ function isActive(routeName) {
 
 <style scoped>
 #sidebar-nav {
-  height: calc(100vh - 9rem);
-  min-height: calc(100vh - 9rem);
+  height: calc(100vh - 9.5rem);
+  min-height: calc(100vh - 9.5rem);
   width: 15rem;
   transition: width 0.3s ease;
   /* color:inherit */
@@ -191,11 +220,11 @@ function isActive(routeName) {
   color: #1d3223 !important;
 } */
 .prim-list-item:hover {
-  color: #284530 !important;
-  background: #e4e4e4 !important;
+  color: var(--primary-color-500) !important;
+  background: var(--primary-text-color-600) !important;
 }
 .prim-list-item:is(.active) {
-  color: #0f2312 !important;
-  background: #ffffff !important;
+  color: var(--primary-color-600) !important;
+  background: var(--primary-text-color-500) !important;
 }
 </style>
