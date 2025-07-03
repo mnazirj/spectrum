@@ -1,1 +1,82 @@
-{}
+{
+  "dash": {
+    "search": "بحث",
+    "create": "إنشاء",
+    "update": "تحديث",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "delete_question1": " هل أنت متأكد أنك تريد حذف",
+    "from": " من ",
+    "?": " ؟",
+    "id": "المعرف",
+    "name": "الاسم",
+    "description": "التفاصيل",
+    "actions": "الأحداث",
+    "name_in_english": "الاسم بالأنجليزية ",
+    "name_in_arabic": "الاسم  بالعربية",
+    "name_in_english_is_required": "الاسم باالإنجليزية مطلوب",
+    "name_in_arabic_is_required": "الاسم بالعربية مطلوب",
+    "description_in_english": "التفاصيل بالأنجليزية",
+    "description_in_arabic": "التفاصيل بالعربية",
+    "description_in_english_is_required": "التفاصيل باالإنجليزية مطلوبة",
+    "description_in_arabic_is_required": "التفاصيل بالعربية مطلوبة",
+    "add": "إضافة ",
+    "category": {
+      "category": "النوع",
+      "categories": "الأنواع",
+      "create_a_category": "إنشاء نوع"
+    },
+    "sub-category": {
+      "sub-category": "النوع الفرعي",
+      "create_a_sub-category": "إنشاء نوع فرعي",
+      "select_a_category": "أختار نوع",
+      "you_must_select_one_of_cateogries": "يجب أن تختار واحد من الأنواع "
+    },
+    "item": {
+      "item": " العنصر",
+      "create_a_item": "إنشاء عنصر",
+      "select_a_sub-category": "إختار نوع فرعي",
+      "you_must_select_one_of_sub-categories": "يجب أن تختار واحد من الأنواع الفرعية"
+    },
+    "brand": {
+      "brand": " الماركة",
+      "create_a_brand": "إنشاء ماركة"
+    },
+    "storage": {
+      "product": " المنتج ",
+      "price": "السعر",
+      "availability": "الإتاحة",
+      "quantity": "العدد",
+      "propareties": "الخصائص ",
+      "create_a_product": "إنشاء منتج",
+      "ingredients_in_english": "المكونات باالإنجليزية",
+      "ingredients_in_arabic": "المكونات بالعربية",
+      "tips_in_english": "النصائح باالإنجليزية",
+      "tips_in_arabic": "النصائح بالعربية",
+      "notes_in_english": "الملاحظات باالإنجليزية",
+      "notes_in_arabic": "الملاحظات بالعربية",
+      "select_a_category": "أختار نوع",
+      "select_a_sub-category": "إختار نوع فرعي",
+      "select_a_item": "إختار عنصر",
+      "select_a_brand": "إختار ماركة",
+      "select_a_gender": "اختار جنس",
+      "value": "القيمة",
+      "type": "الصنف",
+      "discount": "التخفيض",
+      "prodcut_images": "صور المنتج",
+
+      "ingredients_in_english_is_required": "المكونات بالأنجليزية مطلوبة",
+      "ingredients_in_arabic_is_required": "المكونات بالعربية مطلوبة",
+      "tips_in_english_is_required": "النصائح باالإنجليزية مطلوبة",
+      "tips_in_arabic_is_required": "النصائح بالعربية مطلوبة",
+      "notes_in_english_is_required": "الملاحظات باالإنجليزية مطلوبة",
+      "notes_in_arabic_is_required": "الملاحظات بالعربية مطلوبة",
+      "you_must_select_one_of_cateogries": "يجب أن تختار واحد من الأنواع ",
+      "you_must_select_one_of_sub-categories": "يجب أن تختار واحد من الأنواع الفرعية",
+      "you_must_select_one_of_items": "يجب أن تختار واحد من العناصر",
+      "you_must_select_one_of_brands": "يجب أن تختار واحدة من الماركات",
+      "value_is_required": "القيمة مطلوبة",
+      "price_is_required": "السعر مطلوب"
+    }
+  }
+}

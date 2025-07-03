@@ -1,1 +1,82 @@
-{}
+{
+  "dash": {
+    "search": "Search",
+    "create": "Create",
+    "update": "Update",
+    "edit": "Edit",
+    "delete": "Delete",
+    "delete_question1": "Are you sure you want delete ",
+    "from": " from ",
+    "?": " ?",
+    "id": "Id",
+    "name": "Name",
+    "description": "Description",
+    "actions": "Actions",
+    "name_in_english": "Name in english",
+    "name_in_arabic": "Name in arabic",
+    "name_in_english_is_required": "Name in english is required",
+    "name_in_arabic_is_required": "Name in arabic is required",
+    "description_in_english": "Description in english",
+    "description_in_arabic": "Description in arabic",
+    "description_in_english_is_required": "Description in english is required",
+    "description_in_arabic_is_required": "Description in arabic is required",
+    "add": "Add",
+    "category": {
+      "category": "Category",
+      "categories": "Categories",
+      "create_a_category": "Create a category"
+    },
+    "sub-category": {
+      "sub-category": "Sub-Category",
+      "create_a_sub-category": "Create a sub-category",
+      "select_a_category": "Select a category",
+      "you_must_select_one_of_cateogries": "You must select one of cateogries"
+    },
+    "item": {
+      "item": "Item ",
+      "create_a_item": "Create a item",
+      "select_a_sub-category": "Select a sub-category",
+      "you_must_select_one_of_sub-categories": "You must select one of sub-categories"
+    },
+    "brand": {
+      "brand": "Brand ",
+      "create_a_brand": "Create a brand"
+    },
+    "storage": {
+      "product": "Product ",
+      "price": "Price",
+      "availability": "Availability",
+      "quantity": "Quantity",
+      "propareties": "Propareties",
+      "create_a_product": "Create a product",
+      "ingredients_in_english": "Ingredients in english",
+      "ingredients_in_arabic": "ingredients in arabic",
+      "tips_in_english": "Tips in english",
+      "tips_in_arabic": "Tips in arabic",
+      "notes_in_english": "Notes in english",
+      "notes_in_arabic": "Notes in arabic",
+      "select_a_category": "Select a category",
+      "select_a_sub-category": "Select a sub-category",
+      "select_a_item": "Select a item",
+      "select_a_brand": "Select a brand",
+      "select_a_gender": "Select a gender",
+      "value": "Value",
+      "type": "Type",
+      "discount": "Discount",
+      "prodcut_images": "Product images",
+
+      "ingredients_in_english_is_required": "Ingredients in english is required",
+      "ingredients_in_arabic_is_required": "Ingredients in arabic is required",
+      "tips_in_english_is_required": "Tips in english is required",
+      "tips_in_arabic_is_required": "Tips in arabic is required",
+      "notes_in_english_is_required": "Notes in english is required",
+      "notes_in_arabic_is_required": "Notes in arabic is required",
+      "you_must_select_one_of_cateogries": "You must select one of cateogries",
+      "you_must_select_one_of_sub-categories": "You must select one of sub-categories",
+      "you_must_select_one_of_items": "You must select one of items",
+      "you_must_select_one_of_brands": "You must select one of brands",
+      "value_is_required": "Value is required",
+      "price_is_required": "Price is required"
+    }
+  }
+}

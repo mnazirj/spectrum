@@ -51,7 +51,12 @@ const routes = [
     component: () => import("@/views/dashboard/DashboardView.vue"),
     beforeEnter: (to, from, next) => {
       if (to.name == "Dashboard") {
-        next({ name: "Overview" });
+        if(localStorage.getItem('_token')){
+           next({ name: "Overview" });
+        } else  {
+          
+        }
+       
       } else {
         next();
       }
@@ -73,9 +78,19 @@ const routes = [
         component: () => import("@/components/dashboard/Category.vue"),
       },
       {
-        path: "company",
-        name: "Company",
-        component: () => import("@/components/dashboard/Company.vue"),
+        path: "sub-category",
+        name: "Subcategory",
+        component: () => import("@/components/dashboard/SubCategory.vue"),
+      },
+      {
+        path: "item",
+        name: "Item",
+        component: () => import("@/components/dashboard/Item.vue"),
+      },
+      {
+        path: "brand",
+        name: "Brand",
+        component: () => import("@/components/dashboard/Brand.vue"),
       },
       {
         path: "order",

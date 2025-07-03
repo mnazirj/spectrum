@@ -6,7 +6,7 @@
       <div class="d-flex justify-content-center align-items-center w-50">
         <DataTable
           :value="views"
-          class="custom-datatable text-nowrap"
+          :class="['custom-datatable text-nowrap', isEng ? 'ltr' : 'rtl']"
           :style="{ width: '98%' }"
         >
           <Column field="pageName" header="Page Name" />
@@ -56,9 +56,21 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Card from "./Card.vue";
 import Chart from "primevue/chart";
-import { ref, onMounted } from "vue";
+import { ref, onBeforeMount, onMounted } from "vue";
+
+// Hooks
+onBeforeMount(() => {
+  if (localStorage.getItem("locale") === "en") {
+    isEng.value = true;
+  }
+});
+onMounted(() => {
+  chartData.value = setChartData();
+  chartOptions.value = setChartOptions();
+});
 
 // Data
+const isEng = ref(false);
 const views = ref([
   {
     id: 1,
@@ -89,11 +101,7 @@ const views = ref([
 const chartData = ref();
 const chartOptions = ref();
 
-// Hooks
-onMounted(() => {
-  chartData.value = setChartData();
-  chartOptions.value = setChartOptions();
-});
+
 
 // Methods
 const setChartData = () => {

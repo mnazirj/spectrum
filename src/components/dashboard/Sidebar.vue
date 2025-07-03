@@ -74,12 +74,32 @@
                 <router-link
                   :class="[
                     'list-group-item prim-list-item bg-main text-white border-0 p-1  my-2 rounded-2',
-                    isActive('Company') ? 'active' : '',
+                    isActive('Subcategory') ? 'active' : '',
                   ]"
-                  :to="{ name: 'Company' }"
+                  :to="{ name: 'Subcategory' }"
+                >
+                  <i class="pi pi-filter-fill mx-1" />
+                  <span class="mx-1">Sub-Categories</span>
+                </router-link>
+                <router-link
+                  :class="[
+                    'list-group-item prim-list-item bg-main text-white border-0 p-1  my-2 rounded-2',
+                    isActive('Item') ? 'active' : '',
+                  ]"
+                  :to="{ name: 'Item' }"
+                >
+                  <i class="pi pi-filter-fill mx-1" />
+                  <span class="mx-1">Items</span>
+                </router-link>
+                <router-link
+                  :class="[
+                    'list-group-item prim-list-item bg-main text-white border-0 p-1  my-2 rounded-2',
+                    isActive('Brand') ? 'active' : '',
+                  ]"
+                  :to="{ name: 'Brand' }"
                 >
                   <i class="pi pi-building mx-1" />
-                  <span class="mx-1">Companies</span>
+                  <span class="mx-1">Brands</span>
                 </router-link>
               </ul>
             </li>
@@ -153,7 +173,7 @@
               <i class="pi pi-money-bill mx-1" />
               <span class="mx-1">Marketing & Promotions</span>
             </router-link>
-            <router-link
+            <!-- <router-link
               :class="[
                 'list-group-item prim-list-item bg-main text-white border-0 p-1 my-2 rounded-2',
                 isActive('') ? 'active' : '',
@@ -161,7 +181,7 @@
             >
               <i class="pi pi-exclamation-triangle mx-1" />
               <span class="mx-1">Custome Reports</span>
-            </router-link>
+            </router-link> -->
           </ul>
         </div>
       </div>

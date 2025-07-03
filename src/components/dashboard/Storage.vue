@@ -10,7 +10,7 @@
             <InputIcon class="pi pi-search text-main-color" />
             <InputText
               v-model="searchValue"
-              placeholder="Search"
+              :placeholder="$t('dash.search')"
               class="w-75"
             />
           </IconField>
@@ -21,7 +21,7 @@
         class="d-flex justify-content-end w-25 px-3"
       >
         <Button
-          label="Create"
+          :label="$t('dash.create')"
           icon="pi pi-plus"
           class="custom-button"
           style="min-width: 6rem"
@@ -36,55 +36,42 @@
         :rows="5"
         :rowsPerPageOptions="[5, 10, 20, 50]"
         removableSort
-        class="custom-datatable text-nowrap"
-        :style="{width:'95%'}"
-        
+        :class="['custom-datatable text-nowrap', isEng ? 'ltr' : 'rtl']"
+        :style="{ width: '95%' }"
+        :loading="products == null"
       >
-        <Column header="ID">
+        <Column :header="$t('dash.id')">
           <template #body="slotProps">
             <span>#{{ slotProps.data.id }}</span>
           </template>
         </Column>
-        <Column header="Name">
+        <Column :header="$t('dash.name')">
           <template #body="slotProps">
-            <span v-if="1 == 1">{{ slotProps.data.enName }}</span>
+            <span v-if="isEng">{{ slotProps.data.name }}</span>
             <span v-else>{{ slotProps.data.arName }}</span>
           </template>
         </Column>
-        <Column header="Category">
+        <Column :header="$t('dash.category.category')">
           <template #body="slotProps">
-            <span v-if="1 == 1">{{ slotProps.data.category.enName }}</span>
+            <span v-if="isEng">{{ slotProps.data.category.title }}</span>
             <span v-else>{{ slotProps.data.category.arName }}</span>
           </template>
         </Column>
-        <Column header="Company">
+        <Column :header="$t('dash.brand.brand')">
           <template #body="slotProps">
-            <span
-              v-if="slotProps.data.company || slotProps.data.company != null"
-            >
-              <span v-if="1 == 1">{{ slotProps.data.company.enName }}</span>
-              <span v-else>{{ slotProps.data.company.arName }}</span>
-            </span>
-            <span
-              v-else
-              class="text-danger font-italic"
-              :style="{ fontSize: '0.7rem' }"
-            >
-              NO-COMPANY
-            </span>
+            <span v-if="isEng">{{ slotProps.data.brand.title }}</span>
+            <span v-else>{{ slotProps.data.brand.arName }}</span>
           </template>
         </Column>
-        <Column
-          field="stockLevel"
-          header="Stock Level"
-          sortable
-        ></Column>
-        <Column header="Price">
+        <Column :header="$t('dash.storage.price')">
           <template #body="slotProps">
-            <span>{{ slotProps.data.price }} $</span>
+            <div v-if="slotProps.data.hasProprety">
+              <span>{{ slotProps.data.propreties[0]?.price }}$</span>
+            </div>
+            <div v-else>{{ slotProps.data.price }} $</div>
           </template>
         </Column>
-        <Column header="Availability">
+        <Column :header="$t('dash.storage.availability')">
           <template #body="slotProps">
             <i
               v-if="slotProps.data.availability"
@@ -93,11 +80,20 @@
             <i v-else class="pi pi-ban text-danger" />
           </template>
         </Column>
-        <Column field="quantity" header="Quantity"></Column>
-        <Column header="Actions">
+        <Column field="quantity" :header="$t('dash.storage.quantity')"></Column>
+        <Column :header="$t('dash.actions')">
           <template #body="slotProps">
             <div class="d-flex">
-              <Button icon="pi pi-eye" variant="text" class="mx-1"></Button>
+              <Button
+                icon="pi pi-eye"
+                variant="text"
+                class="mx-1"
+                @click="
+                  router.push(
+                    `/${$i18n.locale}/shop/product/${slotProps.data.slug}`
+                  )
+                "
+              ></Button>
               <Button
                 icon="pi pi-pen-to-square"
                 severity="info"
@@ -112,13 +108,6 @@
                 class="mx-1"
                 @click="openDeleteDialog(slotProps.data)"
               ></Button>
-              <Button
-                icon="pi pi-plus"
-                variant="text"
-                class="mx-1"
-                @click="openAddSizeDialog(slotProps.data)"
-                
-              ></Button>
             </div>
           </template>
         </Column>
@@ -127,152 +116,542 @@
   </div>
 
   <!-- Create Dialog -->
-
   <Dialog
     v-model:visible="creatDialog"
     modal
-    header="Create a product"
+    :header="$t('dash.storage.create_a_product')"
     :style="{ width: '60rem' }"
+    :dir="isEng ? 'ltr' : 'rtl'"
   >
-    <div
-      class="d-flex justify-content-center align-items-center flex-wrap w-100 p-2 px-4"
+    <Form
+      v-slot="$form"
+      :resolver="createResolver"
+      @submit="onFormSubmitCreate"
     >
-      <!-- Product Name -->
       <div
-        id="name-container"
-        class="d-flex flex-wrap align-content-center w-100 my-3"
+        class="d-flex justify-content-center align-items-center flex-wrap w-100 p-2 px-4"
       >
-        <div class="">
-          <FloatLabel variant="on">
-            <InputText id="name-in-english" fluid />
-            <label for="name-in-english">Name in english</label>
-          </FloatLabel>
+        <div class="w-100 d-flex align-items-center my-3">
+          <span class="mx-2 fs-5 font-bold"
+            >{{ $t("dash.storage.availability") }}
+          </span>
+          <ToggleSwitch v-model="newProduct.availability" class="mx-2 d-flex" />
         </div>
-        <div class="">
-          <FloatLabel variant="on">
-            <InputText id="name-in-arabic" fluid />
-            <label for="name-in-arabic">Name in arabic</label>
-          </FloatLabel>
+        <!-- Product Name -->
+        <div
+          id="name-container"
+          class="section d-flex flex-wrap align-content-center w-100 my-3"
+        >
+          <div class="">
+            <FloatLabel variant="on">
+              <InputText
+                id="name-in-english"
+                name="name"
+                v-model="newProduct.name"
+                fluid
+              />
+              <label for="name-in-english"
+                ><i class="fa-solid fa-heading mx-1" /><span class="mx-1">{{
+                  $t("dash.name_in_english")
+                }}</span></label
+              >
+            </FloatLabel>
+            <Message
+              v-if="$form.name?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              class="w-100"
+              >{{ $t($form.name.error?.message) }}</Message
+            >
+          </div>
+          <div class="">
+            <FloatLabel variant="on">
+              <InputText
+                v-model="newProduct.arName"
+                name="arName"
+                id="name-in-arabic"
+                fluid
+              />
+              <label for="name-in-arabic"
+                ><i class="fa-solid fa-heading mx-1" /><span class="mx-1">{{
+                  $t("dash.name_in_arabic")
+                }}</span></label
+              >
+            </FloatLabel>
+            <Message
+              v-if="$form.arName?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              class="w-100"
+              >{{ $t($form.arName.error?.message) }}</Message
+            >
+          </div>
         </div>
-      </div>
-      <!-- Product variant -->
-      <div
-        id="variant-container"
-        class="d-flex flex-wrap align-content-center w-100 my-3"
-      >
-        <div class="">
-          <FloatLabel variant="on">
-            <Textarea
-              id="variant-in-english"
-              rows="5"
-              cols="30"
-              style="resize: none"
-              fluid
+        <!-- description -->
+        <div
+          id="description-container"
+          class="section d-flex flex-wrap align-content-center w-100 my-3"
+        >
+          <div class="">
+            <FloatLabel variant="on">
+              <Textarea
+                id="description-in-english"
+                v-model="newProduct.description"
+                name="description"
+                rows="5"
+                cols="30"
+                style="resize: none"
+                fluid
+              />
+              <label for="description-in-english"
+                ><i class="pi pi-pencil mx-1" /><span class="mx-1">{{
+                  $t("dash.description_in_english")
+                }}</span></label
+              >
+            </FloatLabel>
+            <Message
+              v-if="$form.description?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              class="w-100"
+              >{{ $t($form.description.error?.message) }}</Message
+            >
+          </div>
+          <div class="">
+            <FloatLabel variant="on">
+              <Textarea
+                id="description-in-arabic"
+                name="arDescription"
+                v-model="newProduct.arDescription"
+                rows="5"
+                cols="30"
+                style="resize: none"
+                fluid
+              />
+              <label for="description-in-arabic"
+                ><i class="pi pi-pencil mx-1" /><span class="mx-1">{{
+                  $t("dash.description_in_arabic")
+                }}</span></label
+              >
+            </FloatLabel>
+            <Message
+              v-if="$form.arDescription?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              class="w-100"
+              >{{ $t($form.arDescription.error?.message) }}</Message
+            >
+          </div>
+        </div>
+        <!-- Product Ingredients -->
+        <div
+          id="ingredients-container"
+          class="section d-flex flex-wrap align-content-center w-100 my-3"
+        >
+          <div class="">
+            <FloatLabel variant="on">
+              <Textarea
+                id="ingredients-in-english"
+                name="ingredients"
+                v-model="newProduct.ingredients"
+                rows="5"
+                cols="30"
+                style="resize: none"
+                fluid
+              />
+              <label for="ingredients-in-english"
+                ><i class="fa-solid fa-receipt mx-1" /><span class="mx-1">{{
+                  $t("dash.storage.ingredients_in_english")
+                }}</span></label
+              >
+            </FloatLabel>
+            <Message
+              v-if="$form.ingredients?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              class="w-100"
+              >{{ $t($form.ingredients.error?.message) }}</Message
+            >
+          </div>
+          <div class="">
+            <FloatLabel variant="on">
+              <Textarea
+                id="ingredients-in-arabic"
+                name="arIngredients"
+                v-model="newProduct.arIngredients"
+                rows="5"
+                cols="30"
+                style="resize: none"
+                fluid
+              />
+              <label for="ingredients-in-arabic"
+                ><i class="fa-solid fa-receipt mx-1" /><span class="mx-1">{{
+                  $t("dash.storage.ingredients_in_arabic")
+                }}</span></label
+              >
+            </FloatLabel>
+            <Message
+              v-if="$form.arIngredients?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              class="w-100"
+              >{{ $t($form.arIngredients.error?.message) }}</Message
+            >
+          </div>
+        </div>
+        <!-- Tips -->
+        <div
+          id="tips-container"
+          class="section d-flex flex-wrap align-content-center w-100 my-3"
+        >
+          <div class="">
+            <FloatLabel variant="on">
+              <Textarea
+                id="tip-in-english"
+                name="tips"
+                v-model="newProduct.tips"
+                rows="5"
+                cols="30"
+                style="resize: none"
+                fluid
+              />
+              <label for="tip-in-english"
+                ><i class="fa-regular fa-thumbs-up mx-1" /><span class="mx-1">{{
+                  $t("dash.storage.tips_in_english")
+                }}</span></label
+              >
+            </FloatLabel>
+            <Message
+              v-if="$form.tips?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              class="w-100"
+              >{{ $t($form.tips.error?.message) }}</Message
+            >
+          </div>
+          <div class="">
+            <FloatLabel variant="on">
+              <Textarea
+                id="tip-in-arabic"
+                name="arTips"
+                v-model="newProduct.arTips"
+                rows="5"
+                cols="30"
+                style="resize: none"
+                fluid
+              />
+              <label for="tip-in-arabic"
+                ><i class="fa-regular fa-thumbs-up mx-1" /><span class="mx-1">{{
+                  $t("dash.storage.tips_in_arabic")
+                }}</span></label
+              >
+            </FloatLabel>
+            <Message
+              v-if="$form.arTips?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              class="w-100"
+              >{{ $t($form.arTips.error?.message) }}</Message
+            >
+          </div>
+        </div>
+        <!-- Note -->
+        <div
+          id="notes-container"
+          class="section d-flex flex-wrap align-content-center w-100 my-3"
+        >
+          <div class="">
+            <FloatLabel variant="on">
+              <Textarea
+                id="note-in-english"
+                name="notes"
+                v-model="newProduct.notes"
+                rows="5"
+                cols="30"
+                style="resize: none"
+                fluid
+              />
+              <label for="note-in-english"
+                ><i class="fa-regular fa-clipboard mx-1" /><span class="mx-1">{{
+                  $t("dash.storage.notes_in_english")
+                }}</span></label
+              >
+            </FloatLabel>
+            <Message
+              v-if="$form.notes?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              class="w-100"
+              >{{ $t($form.notes.error?.message) }}</Message
+            >
+          </div>
+          <div class="">
+            <FloatLabel variant="on">
+              <Textarea
+                id="note-in-arabic"
+                name="arNotes"
+                v-model="newProduct.arNotes"
+                rows="5"
+                cols="30"
+                style="resize: none"
+                fluid
+              />
+              <label for="note-in-arabic"
+                ><i class="fa-regular fa-clipboard mx-1" /><span class="mx-1">{{
+                  $t("dash.storage.notes_in_arabic")
+                }}</span></label
+              >
+            </FloatLabel>
+            <Message
+              v-if="$form.arNotes?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              class="w-100"
+              >{{ $t($form.arNotes.error?.message) }}</Message
+            >
+          </div>
+        </div>
+        <!-- Category & subCategory & item -->
+        <div
+          id="ccq-container"
+          class="section-3 d-flex flex-wrap align-content-center w-100 my-3"
+        >
+          <div class="mt-3">
+            <Select
+              v-model="newProduct.categoryId"
+              optionValue="id"
+              :options="categories"
+              optionLabel="title"
+              name="categories"
+              :placeholder="$t('dash.storage.select_a_category')"
+              class="w-100"
+              @change="filterSubCategory(newProduct.categoryId)"
             />
-            <label for="variant-in-english">Variant in english</label>
-          </FloatLabel>
-        </div>
-        <div class="">
-          <FloatLabel variant="on">
-            <Textarea
-              id="variant-in-arabic"
-              rows="5"
-              cols="30"
-              style="resize: none"
-              fluid
+            <Message
+              v-if="$form.categories?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              class="w-100"
+              >{{ $t($form.categories.error?.message) }}</Message
+            >
+          </div>
+          <div class="mt-3">
+            <Select
+              v-model="newProduct.subCategoryId"
+              optionValue="id"
+              :options="filteredSubCategories"
+              optionLabel="title"
+              name="sub_categories"
+              :placeholder="$t('dash.storage.select_a_sub-category')"
+              class="w-100"
+              v-if="newProduct.categoryId != null"
+              @change="filterItem(newProduct.subCategoryId)"
             />
-            <label for="variant-in-arabic">Variant in arabic</label>
-          </FloatLabel>
-        </div>
-      </div>
-      <!-- description -->
-      <div
-        id="description-container"
-        class="d-flex flex-wrap align-content-center w-100 my-3"
-      >
-        <div class="">
-          <FloatLabel variant="on">
-            <Textarea
-              id="description-in-english"
-              rows="5"
-              cols="30"
-              style="resize: none"
-              fluid
+            <Message
+              v-if="$form.sub_categories?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              class="w-100"
+              >{{ $t($form.sub_categories.error?.message) }}</Message
+            >
+          </div>
+          <div class="mt-3">
+            <Select
+              v-model="newProduct.itemsId"
+              optionValue="id"
+              :options="filteredItems"
+              optionLabel="title"
+              name="items"
+              :placeholder="$t('dash.storage.select_a_item')"
+              class="w-100"
+              v-if="newProduct.subCategoryId != null"
             />
-            <label for="description-in-english">Description in english</label>
-          </FloatLabel>
+            <Message
+              v-if="$form.items?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              class="w-100"
+              >{{ $t($form.items.error?.message) }}</Message
+            >
+          </div>
         </div>
-        <div class="">
-          <FloatLabel variant="on">
-            <Textarea
-              id="description-in-arabic"
-              rows="5"
-              cols="30"
-              style="resize: none"
-              fluid
+        <!-- brand & quantity -->
+        <div
+          id="brnad-container"
+          class="section-3 d-flex flex-wrap align-content-center w-100 my-3"
+        >
+          <div class="mt-3">
+            <Select
+              v-model="newProduct.brandId"
+              optionValue="id"
+              :options="brands"
+              optionLabel="title"
+              name="brands"
+              :placeholder="$t('dash.storage.select_a_brand')"
+              class="w-100"
             />
-            <label for="description-in-arabic">Description in arabic</label>
-          </FloatLabel>
-        </div>
-      </div>
-      <!-- Category & Company & Quantity -->
-      <div
-        id="ccq-container"
-        class="d-flex flex-wrap align-content-center w-100 my-3"
-      >
-        <div class="mt-3">
-          <Select
-            v-model="newProduct.category"
-            :options="categories"
-            optionLabel="enName"
-            placeholder="Select a category"
-            class="w-100"
-          />
-        </div>
-        <div class="mt-3">
-          <Select
-            v-model="newProduct.company"
-            :options="companies"
-            optionLabel="enName"
-            placeholder="Select a company"
-            class="w-100"
-          />
-        </div>
-        <div class="mt-3">
-          <FloatLabel variant="on">
-            <IconField class="w-100">
-              <InputIcon class="pi pi-calculator text-main" />
+            <Message
+              v-if="$form.brands?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              class="w-100"
+              >{{ $t($form.brands.error?.message) }}</Message
+            >
+          </div>
+          <div class="mt-3">
+            <FloatLabel variant="on">
               <InputNumber id="quantity" v-model="newProduct.quantity" fluid />
-            </IconField>
-            <label for="quantity">Quantity</label>
-          </FloatLabel>
+              <label for="quantity"
+                ><i class="pi pi-calculator mx-1" /><span class="mx-1">{{
+                  $t("dash.storage.quantity")
+                }}</span></label
+              >
+            </FloatLabel>
+          </div>
+          <div class="mt-3">
+            <Select
+              v-model="newProduct.gender"
+              :options="genders"
+              optionValue="value"
+              optionLabel="lable"
+              :placeholder="$t('dash.storage.select_a_gender')"
+              class="w-100"
+            />
+          </div>
         </div>
-      </div>
-      <!-- Payment -->
-      <div
-        id="payment-container"
-        class="d-flex flex-wrap align-content-center w-100 my-3"
-      >
-        <div>
-          <FloatLabel variant="on">
-            <IconField class="w-100">
-              <InputIcon class="pi pi-dollar text-main" />
+        <!-- has proparety -->
+        <div
+          id="hasproparety-container"
+          class="d-flex flex-wrap align-items-center w-100 my-3"
+        >
+          <span class="mx-2 fs-5 font-bold"
+            >{{ $t("dash.storage.propareties") }}
+          </span>
+          <ToggleSwitch v-model="newProduct.hasProprety" class="mx-2 d-flex" />
+        </div>
+        <!-- Proparety -->
+        <div
+          id="propareties-container"
+          class="d-flex flex-wrap align-items-center w-100 my-3"
+          v-if="newProduct.hasProprety"
+        >
+          <div class="w-100">
+            <i class="pi pi-plus mx-1 fs-5" />
+            <span class="mx-1 fs-5 font-bold"
+              >{{ $t("dash.storage.propareties") }}
+            </span>
+          </div>
+          <DataTable
+            :value="newProduct.propreties"
+            v-if="
+              newProduct.propreties != null && newProduct.propreties.length != 0
+            "
+            class="w-100"
+          >
+            <Column :header="$t('dash.storage.value')">
+              <template #body="slotProps">
+                <InputText v-model="slotProps.data.value" fluid />
+
+                <Message
+                  v-if="proparetyValidationCreate.value[slotProps.index] != null"
+                  severity="error"
+                  size="small"
+                  variant="simple"
+                  class="w-100"
+                  >{{
+                    $t(proparetyValidationCreate.value[slotProps.index].message)
+                  }}</Message
+                >
+              </template>
+            </Column>
+            <Column :header="$t('dash.storage.price')">
+              <template #body="slotProps">
+                <InputText v-model="slotProps.data.price" fluid />
+                <Message
+                  v-if="proparetyValidationCreate.price[slotProps.index] != null"
+                  severity="error"
+                  size="small"
+                  variant="simple"
+                  class="w-100"
+                  >{{
+                    $t(proparetyValidationCreate.price[slotProps.index].message)
+                  }}</Message
+                >
+              </template>
+            </Column>
+            <Column :header="$t('dash.storage.type')">
+              <template #body>
+                <SelectButton
+                  v-model="proparetyTypeSelected"
+                  :options="proparetiesType"
+                />
+              </template>
+            </Column>
+            <Column>
+              <template #body="slotProps">
+                <Button
+                  icon="pi pi-trash"
+                  severity="danger"
+                  variant="text"
+                  @click="newProduct.propreties.splice(slotProps.index, 1)"
+                />
+              </template>
+            </Column>
+          </DataTable>
+          <div class="w-100 d-flex justify-content-center mt-2">
+            <Button
+              icon="pi pi-plus"
+              :label="$t('dash.add')"
+              variant="text"
+              @click="
+                newProduct.propreties.push({
+                  id: null,
+                  type: proparetyTypeSelected,
+                  value: null,
+                  price: null,
+                })
+              "
+            ></Button>
+          </div>
+        </div>
+        <!-- Payment -->
+        <div
+          id="payment-container"
+          class="section d-flex flex-wrap align-content-center w-100 my-3"
+        >
+          <div v-if="!newProduct.hasProprety">
+            <FloatLabel variant="on">
               <InputNumber
                 id="price"
                 v-model="newProduct.price"
                 fluid
                 mode="currency"
-                currency="USD"
+                currency="LYD"
                 locale="en-US"
               />
-            </IconField>
-            <label for="price">Price</label>
-          </FloatLabel>
-        </div>
-        <div>
-          <FloatLabel variant="on">
-            <IconField class="w-100">
-              <InputIcon class="pi pi-percentage text-main" />
+              <label for="price"
+                ><i class="pi pi-dollar mx-1" /><span class="mx-1">{{
+                  $t("dash.storage.price")
+                }}</span></label
+              >
+            </FloatLabel>
+          </div>
+          <div>
+            <FloatLabel variant="on">
               <InputNumber
                 id="discount"
                 v-model="newProduct.discount"
@@ -281,232 +660,622 @@
                 :min="0"
                 prefix="%"
               />
-            </IconField>
-            <label for="discount">Discount</label>
-          </FloatLabel>
+              <label for="discount"
+                ><i class="pi pi-percentage mx-1" /><span class="mx-1">{{
+                  $t("dash.storage.discount")
+                }}</span></label
+              >
+            </FloatLabel>
+          </div>
         </div>
-      </div>
-      <!-- Product Cover -->
-      <div
-        id="cover-container"
-        class="d-flex flex-wrap justify-content-center align-content-center w-100 my-3"
-      >
-        <div class="w-100">
-          <i class="pi pi-image mx-1" />
-          <span class="mx-1 fs-5">Cover image</span>
-        </div>
-        <div class="d-flex justify-content-center align-items-center w-100 m-3">
-          <input
-            ref="inputCoverImage"
-            type="file"
-            accept="image/*"
-            class="d-none"
-            @change="createAddCoverImage"
-          />
-          <div
-            class="cover-image relative"
-            @mouseenter="isCoverImageHovered = true"
-            @mouseleave="isCoverImageHovered = false"
-            v-if="newProduct.coverImg != null"
-          >
-            <img
-              :src="newProduct.coverImg"
-              :style="{ width: '100%', height: '100%', borderRadius: '0.8rem' }"
-              alt="cover-image"
-            />
+        <!-- Product Images -->
+        <div
+          id="images-container"
+          class="d-flex flex-wrap justify-content-center align-content-center w-100 my-3"
+        >
+          <div class="w-100">
+            <i class="pi pi-images fs-5"></i>
+            <span class="fs-5 font-bold mx-2">{{
+              $t("dash.storage.prodcut_images")
+            }}</span>
+          </div>
+          <div class="w-100 d-flex justify-content-center flex-wrap">
             <div
-              v-show="isCoverImageHovered"
-              class="cover-img-overlay d-flex justify-content-center align-items-center"
+              v-for="(img, i) in newProduct.image"
+              :key="i"
+              class="image-container mx-3 my-2 relative"
+              @mouseenter="isImageHovered = true"
+              @mouseleave="isImageHovered = false"
             >
-              <i
-                class="pi pi-eye mx-1 text-main fs-3 cursor-pointer"
-                @click="viewCoverImage(newProduct.coverImg)"
-              ></i>
-              <i
-                class="pi pi-pen-to-square mx-1 text-primary fs-3 cursor-pointer"
-                @click="inputCoverImage.click()"
-              ></i>
-              <i
-                class="pi pi-trash mx-1 text-danger fs-3 cursor-pointer"
-                @click="newProduct.coverImg = null"
-              ></i>
+              <img
+                :src="trasformIntoURL(img)"
+                :alt="'image-' + i"
+                class="product-imgs"
+              />
+              <div
+                v-show="isImageHovered"
+                class="overlay-imgs d-flex justify-content-center align-items-center"
+              >
+                <i
+                  class="pi pi-eye mx-1 t fs-3 cursor-pointer"
+                  :style="{ color: 'var(--primary-color-500)' }"
+                  @click="viewImage(img)"
+                ></i>
+
+                <i
+                  class="pi pi-trash mx-1 text-danger fs-3 cursor-pointer"
+                  @click="newProduct.image.splice(i, 1)"
+                ></i>
+              </div>
             </div>
           </div>
-          <div v-else>
+          <div
+            class="d-flex justify-content-center align-items-center w-100 mt-4"
+          >
+            <input
+              ref="fileInputImage"
+              type="file"
+              accept="image/*"
+              class="d-none"
+              @change="addImageCreate"
+            />
             <Button
               icon="pi pi-plus"
-              label="Add"
+              :label="$t('dash.add')"
               variant="text"
-              @click="inputCoverImage.click()"
+              @click="fileInputImage.click()"
             ></Button>
           </div>
         </div>
       </div>
-      <!-- Product Images -->
-    </div>
-    <template #footer>
-      <Button
-        icon="pi pi-plus"
-        label="Create"
-        @click="console.log('Created!!')"
-      ></Button>
-    </template>
+      <div class="d-flex justify-content-end">
+        <Button
+          icon="pi pi-plus"
+          :label="$t('dash.create')"
+          type="submit"
+          :loading="loadingData"
+        />
+      </div>
+    </Form>
   </Dialog>
 
   <!-- Edit Dialog -->
   <Dialog
     v-model:visible="editDialog"
     modal
-    :header="'Edit #' + currentData.id + ' product'"
+    :header="`
+      ${$t('dash.edit')}  ${$t('dash.storage.product')}  '${
+      isEng ? currentData.name : currentData.arName
+    }'`"
     :style="{ width: '60rem' }"
+    :dir="isEng ? 'ltr' : 'rtl'"
   >
-    <div
-      class="d-flex justify-content-center align-items-center flex-wrap w-100 p-2 px-4"
-    >
-      <!-- Product Name -->
+    <Form v-slot="$form" :resolver="editResolver" @submit="onFormSubmitEdit">
       <div
-        id="name-container"
-        class="d-flex flex-wrap align-content-center w-100 my-3"
+        class="d-flex justify-content-center align-items-center flex-wrap w-100 p-2 px-4"
       >
-        <div class="">
-          <FloatLabel variant="on">
-            <InputText
-              id="name-in-english"
-              v-model="currentData.enName"
-              fluid
-            />
-            <label for="name-in-english">Name in english</label>
-          </FloatLabel>
-        </div>
-        <div class="">
-          <FloatLabel variant="on">
-            <InputText id="name-in-arabic" v-model="currentData.arName" fluid />
-            <label for="name-in-arabic">Name in arabic</label>
-          </FloatLabel>
-        </div>
-      </div>
-      <!-- Product variant -->
-      <div
-        id="variant-container"
-        class="d-flex flex-wrap align-content-center w-100 my-3"
-      >
-        <div class="">
-          <FloatLabel variant="on">
-            <Textarea
-              id="variant-in-english"
-              rows="5"
-              cols="30"
-              style="resize: none"
-              v-model="currentData.enVariant"
-              fluid
-            />
-            <label for="variant-in-english">Variant in english</label>
-          </FloatLabel>
-        </div>
-        <div class="">
-          <FloatLabel variant="on">
-            <Textarea
-              id="variant-in-arabic"
-              rows="5"
-              cols="30"
-              style="resize: none"
-              v-model="currentData.arVariant"
-              fluid
-            />
-            <label for="variant-in-arabic">Variant in arabic</label>
-          </FloatLabel>
-        </div>
-      </div>
-      <!-- description -->
-      <div
-        id="description-container"
-        class="d-flex flex-wrap align-content-center w-100 my-3"
-      >
-        <div class="">
-          <FloatLabel variant="on">
-            <Textarea
-              id="description-in-english"
-              rows="5"
-              cols="30"
-              style="resize: none"
-              v-model="currentData.enDescription"
-              fluid
-            />
-            <label for="description-in-english">Description in english</label>
-          </FloatLabel>
-        </div>
-        <div class="">
-          <FloatLabel variant="on">
-            <Textarea
-              id="description-in-arabic"
-              rows="5"
-              cols="30"
-              style="resize: none"
-              v-model="currentData.arDescription"
-              fluid
-            />
-            <label for="description-in-arabic">Description in arabic</label>
-          </FloatLabel>
-        </div>
-      </div>
-      <!-- Category & Company & Quantity -->
-      <div
-        id="ccq-container"
-        class="d-flex flex-wrap align-content-center w-100 my-3"
-      >
-        <div class="mt-3">
-          <Select
-            v-model="currentData.category"
-            :options="categories"
-            optionLabel="enName"
-            placeholder="Select a category"
-            class="w-100"
+        <div class="w-100 d-flex align-items-center my-3">
+          <span class="mx-2 fs-5 font-bold"
+            >{{ $t("dash.storage.availability") }}
+          </span>
+          <ToggleSwitch
+            v-model="currentData.availability"
+            class="mx-2 d-flex"
           />
         </div>
-        <div class="mt-3">
-          <Select
-            v-model="currentData.company"
-            :options="companies"
-            optionLabel="enName"
-            placeholder="Select a company"
-            class="w-100"
-          />
+        <!-- Product Name -->
+        <div
+          id="name-container"
+          class="section d-flex flex-wrap align-content-center w-100 my-3"
+        >
+          <div class="">
+            <FloatLabel variant="on">
+              <InputText
+                v-model="currentData.name"
+                id="name-in-english"
+                name="name"
+                fluid
+              />
+              <label for="name-in-english"
+                ><i class="fa-solid fa-heading mx-1" /><span class="mx-1">{{
+                  $t("dash.name_in_english")
+                }}</span></label
+              >
+            </FloatLabel>
+            <Message
+              v-if="$form.name?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              class="w-100"
+              >{{ $t($form.name.error?.message) }}</Message
+            >
+          </div>
+          <div class="">
+            <FloatLabel variant="on">
+              <InputText
+                v-model="currentData.arName"
+                id="name-in-arabic"
+                name="arName"
+                fluid
+              />
+              <label for="name-in-arabic"
+                ><i class="fa-solid fa-heading mx-1" /><span class="mx-1">{{
+                  $t("dash.name_in_arabic")
+                }}</span></label
+              >
+            </FloatLabel>
+            <Message
+              v-if="$form.arName?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              class="w-100"
+              >{{ $t($form.arName.error?.message) }}</Message
+            >
+          </div>
         </div>
-        <div class="mt-3">
-          <FloatLabel variant="on">
-            <IconField class="w-100">
-              <InputIcon class="pi pi-calculator text-main" />
+        <!-- description -->
+        <div
+          id="description-container"
+          class="section d-flex flex-wrap align-content-center w-100 my-3"
+        >
+          <div class="">
+            <FloatLabel variant="on">
+              <Textarea
+                id="description-in-english"
+                name="description"
+                rows="5"
+                cols="30"
+                style="resize: none"
+                v-model="currentData.description"
+                fluid
+              />
+              <label for="description-in-english"
+                ><i class="pi pi-pencil mx-1" /><span class="mx-1">{{
+                  $t("dash.description_in_english")
+                }}</span></label
+              >
+            </FloatLabel>
+            <Message
+              v-if="$form.description?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              class="w-100"
+              >{{ $t($form.description.error?.message) }}</Message
+            >
+          </div>
+          <div class="">
+            <FloatLabel variant="on">
+              <Textarea
+                id="description-in-arabic"
+                name="arDescription"
+                rows="5"
+                cols="30"
+                style="resize: none"
+                v-model="currentData.arDescription"
+                fluid
+              />
+              <label for="description-in-arabic"
+                ><i class="pi pi-pencil mx-1" /><span class="mx-1">{{
+                  $t("dash.description_in_arabic")
+                }}</span></label
+              >
+            </FloatLabel>
+            <Message
+              v-if="$form.arDescription?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              class="w-100"
+              >{{ $t($form.arDescription.error?.message) }}</Message
+            >
+          </div>
+        </div>
+        <!-- Product Ingredients -->
+        <div
+          id="ingredients-container"
+          class="section d-flex flex-wrap align-content-center w-100 my-3"
+        >
+          <div class="">
+            <FloatLabel variant="on">
+              <Textarea
+                id="ingredients-in-english"
+                name="ingredients"
+                v-model="currentData.ingredients"
+                rows="5"
+                cols="30"
+                style="resize: none"
+                fluid
+              />
+              <label for="ingredients-in-english"
+                ><i class="fa-solid fa-receipt mx-1" /><span class="mx-1">{{
+                  $t("dash.storage.ingredients_in_english")
+                }}</span></label
+              >
+            </FloatLabel>
+            <Message
+              v-if="$form.ingredients?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              class="w-100"
+              >{{ $t($form.ingredients.error?.message) }}</Message
+            >
+          </div>
+          <div class="">
+            <FloatLabel variant="on">
+              <Textarea
+                id="ingredients-in-arabic"
+                name="arIngredients"
+                v-model="currentData.arIngredients"
+                rows="5"
+                cols="30"
+                style="resize: none"
+                fluid
+              />
+              <label for="ingredients-in-arabic"
+                ><i class="fa-solid fa-receipt mx-1" /><span class="mx-1">{{
+                  $t("dash.storage.ingredients_in_arabic")
+                }}</span></label
+              >
+            </FloatLabel>
+            <Message
+              v-if="$form.arIngredients?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              class="w-100"
+              >{{ $t($form.arIngredients.error?.message) }}</Message
+            >
+          </div>
+        </div>
+        <!-- Tips -->
+        <div
+          id="tips-container"
+          class="section d-flex flex-wrap align-content-center w-100 my-3"
+        >
+          <div class="">
+            <FloatLabel variant="on">
+              <Textarea
+                id="tip-in-english"
+                name="tips"
+                v-model="currentData.tips"
+                rows="5"
+                cols="30"
+                style="resize: none"
+                fluid
+              />
+              <label for="tip-in-english"
+                ><i class="fa-regular fa-thumbs-up mx-1" /><span class="mx-1">{{
+                  $t("dash.storage.tips_in_english")
+                }}</span></label
+              >
+            </FloatLabel>
+            <Message
+              v-if="$form.tips?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              class="w-100"
+              >{{ $t($form.tips.error?.message) }}</Message
+            >
+          </div>
+          <div class="">
+            <FloatLabel variant="on">
+              <Textarea
+                id="tip-in-arabic"
+                name="arTips"
+                v-model="currentData.arTips"
+                rows="5"
+                cols="30"
+                style="resize: none"
+                fluid
+              />
+              <label for="tip-in-arabic"
+                ><i class="fa-regular fa-thumbs-up mx-1" /><span class="mx-1">{{
+                  $t("dash.storage.tips_in_arabic")
+                }}</span></label
+              >
+            </FloatLabel>
+            <Message
+              v-if="$form.arTips?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              class="w-100"
+              >{{ $t($form.arTips.error?.message) }}</Message
+            >
+          </div>
+        </div>
+        <!-- Note -->
+        <div
+          id="notes-container"
+          class="section d-flex flex-wrap align-content-center w-100 my-3"
+        >
+          <div class="">
+            <FloatLabel variant="on">
+              <Textarea
+                id="note-in-english"
+                name="notes"
+                v-model="currentData.notes"
+                rows="5"
+                cols="30"
+                style="resize: none"
+                fluid
+              />
+              <label for="note-in-english"
+                ><i class="fa-regular fa-thumbs-up mx-1" /><span class="mx-1">{{
+                  $t("dash.storage.notes_in_english")
+                }}</span></label
+              >
+            </FloatLabel>
+            <Message
+              v-if="$form.notes?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              class="w-100"
+              >{{ $t($form.notes.error?.message) }}</Message
+            >
+          </div>
+          <div class="">
+            <FloatLabel variant="on">
+              <Textarea
+                id="note-in-arabic"
+                name="arNotes"
+                v-model="currentData.arNotes"
+                rows="5"
+                cols="30"
+                style="resize: none"
+                fluid
+              />
+              <label for="note-in-arabic"
+                ><i class="fa-regular fa-thumbs-up mx-1" /><span class="mx-1">{{
+                  $t("dash.storage.notes_in_arabic")
+                }}</span></label
+              >
+            </FloatLabel>
+            <Message
+              v-if="$form.arNotes?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              class="w-100"
+              >{{ $t($form.arNotes.error?.message) }}</Message
+            >
+          </div>
+        </div>
+        <!-- Category & subCategory & item -->
+        <div
+          id="ccq-container"
+          class="section-3 d-flex flex-wrap align-content-center w-100 my-3"
+        >
+          <div class="mt-3">
+            <Select
+              v-model="currentData.category.id"
+              :options="categories"
+              optionLabel="title"
+              optionValue="id"
+              name="categories"
+              :placeholder="$t('dash.storage.select_a_category')"
+              class="w-100"
+              @change="filterSubCategory(currentData.category.id)"
+            />
+            <Message
+              v-if="$form.categories?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              class="w-100"
+              >{{ $t($form.categories.error?.message) }}</Message
+            >
+          </div>
+          <div class="mt-3">
+            <Select
+              v-model="currentData.subCategory.id"
+              :options="filteredSubCategories"
+              optionLabel="title"
+              optionValue="id"
+              name="sub_categories"
+              :placeholder="$t('dash.storage.select_a_sub-category')"
+              class="w-100"
+              v-if="currentData.category != null"
+              @change="filterItem(currentData.subCategory.id)"
+            />
+            <Message
+              v-if="$form.sub_categories?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              class="w-100"
+              >{{ $t($form.sub_categories.error?.message) }}</Message
+            >
+          </div>
+          <div class="mt-3">
+            <Select
+              v-model="currentData.itemsCategory.id"
+              :options="filteredItems"
+              optionLabel="title"
+              optionValue="id"
+              name="items"
+              :placeholder="$t('dash.storage.select_a_item')"
+              class="w-100"
+              v-if="currentData.subCategory != null"
+            />
+            <Message
+              v-if="$form.items?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              class="w-100"
+              >{{ $t($form.items.error?.message) }}</Message
+            >
+          </div>
+        </div>
+        <!-- brand & quantity -->
+        <div
+          id="brnad-container"
+          class="section-3 d-flex flex-wrap align-content-center w-100 my-3"
+        >
+          <div class="mt-3">
+            <Select
+              v-model="currentData.brand.id"
+              :options="brands"
+              optionLabel="title"
+              optionValue="id"
+              name="brands"
+              :placeholder="$t('dash.storage.select_a_brand')"
+              class="w-100"
+            />
+            <Message
+              v-if="$form.brands?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              class="w-100"
+              >{{ $t($form.brands.error?.message) }}</Message
+            >
+          </div>
+          <div class="mt-3">
+            <FloatLabel variant="on">
               <InputNumber id="quantity" v-model="currentData.quantity" fluid />
-            </IconField>
-            <label for="quantity">Quantity</label>
-          </FloatLabel>
+              <label for="quantity"
+                ><i class="pi pi-calculator mx-1" /><span class="mx-1">{{
+                  $t("dash.storage.quantity")
+                }}</span></label
+              >
+            </FloatLabel>
+          </div>
+          <div class="mt-3">
+            <Select
+              v-model="currentData.gender"
+              :options="genders"
+              optionValue="value"
+              optionLabel="lable"
+              :placeholder="$t('dash.storage.select_a_gender')"
+              class="w-100"
+            />
+          </div>
         </div>
-      </div>
-      <!-- Payment -->
-      <div
-        id="payment-container"
-        class="d-flex flex-wrap align-content-center w-100 my-3"
-      >
-        <div>
-          <FloatLabel variant="on">
-            <IconField class="w-100">
-              <InputIcon class="pi pi-dollar text-main" />
+        <!-- has proparety -->
+        <div
+          id="hasproparety-container"
+          class="d-flex flex-wrap align-items-center w-100 my-3"
+        >
+          <span class="mx-2 fs-5 font-bold"
+            >{{ $t("dash.storage.propareties") }}
+          </span>
+          <ToggleSwitch v-model="currentData.hasProprety" class="mx-2 d-flex" />
+        </div>
+        <!-- Proparety -->
+        <div
+          id="propareties-container"
+          class="d-flex flex-wrap align-items-center w-100 my-3"
+          v-if="currentData.hasProprety"
+        >
+          <div class="w-100">
+            <i class="pi pi-plus mx-1 fs-5" />
+            <span class="mx-1 fs-5 font-bold">{{
+              $t("dash.storage.propareties")
+            }}</span>
+          </div>
+          <DataTable
+            :value="currentData.propreties"
+            v-if="currentData.propreties.length > 0"
+            class="w-100"
+          >
+            <Column :header="$t('dash.storage.value')">
+              <template #body="slotProps">
+                <InputText v-model="slotProps.data.value" fluid />
+                <Message
+                  v-if="proparetyValidationEdit.value[slotProps.index] != null"
+                  severity="error"
+                  size="small"
+                  variant="simple"
+                  class="w-100"
+                  >{{
+                    $t(proparetyValidationEdit.value[slotProps.index].message)
+                  }}</Message
+                >
+              </template>
+            </Column>
+            <Column :header="$t('dash.storage.price')">
+              <template #body="slotProps">
+                <InputText v-model="slotProps.data.price" fluid />
+                 <Message
+                  v-if="proparetyValidationEdit.price[slotProps.index] != null"
+                  severity="error"
+                  size="small"
+                  variant="simple"
+                  class="w-100"
+                  >{{
+                    $t(proparetyValidationEdit.price[slotProps.index].message)
+                  }}</Message
+                >
+              </template>
+            </Column>
+            <Column :header="$t('dash.storage.type')">
+              <template #body>
+                <SelectButton
+                  v-model="proparetyTypeSelected"
+                  :options="proparetiesType"
+                  @change="changeProparety(proparetyTypeSelected)"
+                />
+              </template>
+            </Column>
+            <Column>
+              <template #body="slotProps">
+                <Button
+                  icon="pi pi-trash"
+                  severity="danger"
+                  variant="text"
+                  @click="deleteProparetyEdit(slotProps.index)"
+                />
+              </template>
+            </Column>
+          </DataTable>
+          <div class="w-100 d-flex justify-content-center mt-2">
+            <Button
+              icon="pi pi-plus"
+              :label="$t('dash.add')"
+              variant="text"
+              @click="
+                currentData.propreties.push({
+                  id: null,
+                  type: proparetyTypeSelected,
+                  value: null,
+                  price: null,
+                })
+              "
+            ></Button>
+          </div>
+        </div>
+        <!-- Payment -->
+        <div
+          id="payment-container"
+          class="section d-flex flex-wrap align-content-center w-100 my-3"
+        >
+          <div v-if="!currentData.hasProprety">
+            <FloatLabel variant="on">
               <InputNumber
                 id="price"
                 v-model="currentData.price"
                 fluid
                 mode="currency"
-                currency="USD"
+                currency="LYD"
                 locale="en-US"
               />
-            </IconField>
-            <label for="price">Price</label>
-          </FloatLabel>
-        </div>
-        <div>
-          <FloatLabel variant="on">
-            <IconField class="w-100">
-              <InputIcon class="pi pi-percentage text-main" />
+              <label for="price"
+                ><i class="pi pi-dollar mx-1" /><span class="mx-1">{{
+                  $t("dash.storage.price")
+                }}</span></label
+              >
+            </FloatLabel>
+          </div>
+          <div>
+            <FloatLabel variant="on">
               <InputNumber
                 id="discount"
                 v-model="currentData.discount"
@@ -515,99 +1284,122 @@
                 :min="0"
                 prefix="%"
               />
-            </IconField>
-            <label for="discount">Discount</label>
-          </FloatLabel>
+              <label for="discount"
+                ><i class="pi pi-percentage mx-1" /><span class="mx-1">{{
+                  $t("dash.storage.discount")
+                }}</span></label
+              >
+            </FloatLabel>
+          </div>
         </div>
-      </div>
-      <!-- Product Cover -->
-      <div
-        id="cover-container"
-        class="d-flex flex-wrap justify-content-center align-content-center w-100 my-3"
-      >
-        <div class="w-100">
-          <i class="pi pi-image mx-1" />
-          <span class="mx-1 fs-5">Cover image</span>
-        </div>
-        <div class="d-flex justify-content-center align-items-center w-100 m-3">
-          <input
-            ref="inputCoverImage"
-            type="file"
-            accept="image/*"
-            class="d-none"
-            @change="editAddCoverImage"
-          />
-          <div
-            class="cover-image relative"
-            @mouseenter="isCoverImageHovered = true"
-            @mouseleave="isCoverImageHovered = false"
-            v-if="currentData.coverImg != null"
-          >
-            <img
-              :src="currentData.coverImg"
-              :style="{ width: '100%', height: '100%', borderRadius: '0.8rem' }"
-              alt="cover-image"
-            />
+        <!-- Product Images -->
+        <div
+          id="images-container"
+          class="d-flex flex-wrap justify-content-center align-content-center w-100 my-3"
+        >
+          <div class="w-100">
+            <i class="pi pi-images fs-5"></i>
+            <span class="fs-5 font-bold mx-2">{{
+              $t("dash.storage.prodcut_images")
+            }}</span>
+          </div>
+          <div class="w-100 d-flex justify-content-center flex-wrap">
             <div
-              v-show="isCoverImageHovered"
-              class="cover-img-overlay d-flex justify-content-center align-items-center"
+              v-for="(img, i) in currentData.images"
+              :key="i"
+              class="image-container mx-3 my-2 relative"
+              @mouseenter="isImageHovered = true"
+              @mouseleave="isImageHovered = false"
             >
-              <i
-                class="pi pi-eye mx-1 text-main fs-3 cursor-pointer"
-                @click="viewCoverImage(currentData.coverImg)"
-              ></i>
-              <i
-                class="pi pi-pen-to-square mx-1 text-primary fs-3 cursor-pointer"
-                @click="inputCoverImage.click()"
-              ></i>
-              <i
-                class="pi pi-trash mx-1 text-danger fs-3 cursor-pointer"
-                @click="currentData.coverImg = null"
-              ></i>
+              <img
+                :src="'http://26.77.145.88:3333/images/' + img.image"
+                :alt="'image-' + i"
+                class="product-imgs"
+                v-if="img.id"
+              />
+
+              <img
+                :src="trasformIntoURL(img)"
+                :alt="'image-' + i"
+                class="product-imgs"
+                v-else
+              />
+              <div
+                v-show="isImageHovered"
+                class="overlay-imgs d-flex justify-content-center align-items-center"
+              >
+                <i
+                  class="pi pi-eye mx-1 t fs-3 cursor-pointer"
+                  :style="{ color: 'var(--primary-color-500)' }"
+                  @click="viewImage(img)"
+                ></i>
+
+                <i
+                  class="pi pi-trash mx-1 text-danger fs-3 cursor-pointer"
+                  @click="deleteImageEdit(i)"
+                ></i>
+              </div>
             </div>
           </div>
-          <div v-else>
+          <div
+            class="d-flex justify-content-center align-items-center w-100 mt-4"
+          >
+            <input
+              ref="fileInputImage"
+              type="file"
+              accept="image/*"
+              class="d-none"
+              @change="addImageEdit"
+            />
             <Button
               icon="pi pi-plus"
-              label="Add"
+              :label="$t('dash.add')"
               variant="text"
-              @click="inputCoverImage.click()"
+              @click="fileInputImage.click()"
             ></Button>
           </div>
         </div>
       </div>
-      <!-- Product Images -->
-    </div>
-    <template #footer>
-      <Button
-        icon="pi pi-file-arrow-up"
-        label="Update"
-        severity="info"
-        @click="console.log('Update!!')"
-      ></Button>
-    </template>
+      <div class="d-flex justify-content-end">
+        <Button
+          icon="pi pi-file-arrow-up"
+          :label="$t('dash.update')"
+          severity="info"
+          type="submit"
+          :loading="loadingData"
+        ></Button>
+      </div>
+    </Form>
   </Dialog>
   <!-- Delete Dialog -->
   <Dialog
     v-model:visible="deleteDialog"
     :modal="true"
     :closable="true"
-    :header="'Delete #' + currentData.id + ' product'"
+    :header="`${$t('dash.delete')}  ${$t('dash.storage.product')} '${
+      isEng ? currentData.name : currentData.arName
+    }'`"
     :style="{ width: '35rem' }"
     :breakpoints="{ '1199px': '85vw', '575px': '95vw' }"
+    :dir="isEng ? 'ltr' : 'rtl'"
   >
-    <span v-if="1 == 1">
-      Are you sure you want to delete {{ currentData.enName }} product?</span
+    <span v-if="isEng">
+      {{ $t("dash.delete_question1") }} {{ $t("dash.storage.product") }} "{{
+        currentData.title
+      }}" {{ $t("dash.?") }}</span
     >
     <span v-else>
-      Are you sure you want to delete {{ currentData.arName }} product?</span
+      {{ $t("dash.delete_question1") }} {{ $t("dash.storage.product") }} "{{
+        currentData.arName
+      }}" {{ $t("dash.?") }}</span
     >
     <template #footer>
       <Button
         icon="pi pi-trash"
-        label="Delete"
+        :label="$t('dash.delete')"
         severity="danger"
-        @click="console.log('DELETE!!!')"
+        @click="deleteProduct"
+        :loading="loadingData"
       ></Button>
     </template>
   </Dialog>
@@ -621,7 +1413,7 @@
     pt:pcclosebutton:severity="danger"
   >
     <img
-      :src="currentImage"
+      :src="'http://26.77.145.88:3333/images/' + currentImage.image"
       alt="Full Image"
       class="rounded-bottom-3"
       :style="{
@@ -630,10 +1422,23 @@
         backgroundAttachment: 'fixed',
         backgroundSize: 'cover',
       }"
+      v-if="currentImage.id"
+    />
+    <img
+      :src="trasformIntoURL(currentImage)"
+      alt="Full Image"
+      class="rounded-bottom-3"
+      :style="{
+        width: '100%',
+        height: '100%',
+        backgroundAttachment: 'fixed',
+        backgroundSize: 'cover',
+      }"
+      v-else
     />
   </Dialog>
   <!-- Add Size Dialog -->
-  <Dialog
+  <!-- <Dialog
     v-model:visible="addSizeDialog"
     :modal="true"
     :closable="true"
@@ -668,7 +1473,7 @@
     <template #footer>
       <Button icon="pi pi-plus" label="Add" @click="addSize"></Button>
     </template>
-  </Dialog>
+  </Dialog> -->
 </template>
 
 <script setup>
@@ -683,307 +1488,603 @@ import FloatLabel from "primevue/floatlabel";
 import Textarea from "primevue/textarea";
 import Select from "primevue/select";
 import InputNumber from "primevue/inputnumber";
+import SelectButton from "primevue/selectbutton";
+import ToggleSwitch from "primevue/toggleswitch";
 import { Form } from "@primevue/forms";
+import Message from "primevue/message";
 
-import { ref } from "vue";
+import { ref, onBeforeMount, onMounted, computed } from "vue";
+import axios from "axios";
+import router from "@/router";
+
+// Hooks
+onMounted(() => {
+  getProducts();
+  getCategories();
+  getSubCategories();
+  getItems();
+  getBrands();
+});
+onBeforeMount(() => {
+  if (localStorage.getItem("locale") === "en") {
+    isEng.value = true;
+  }
+});
 
 // Data
 const currentData = ref({
-  arName: "",
-  enName: "",
-  arVariant: "",
-  enVariant: "",
-  category: "",
-  company: "",
-  stockLevel: 0,
-  brand: "",
+  id: null,
+  name: null,
+  arName: null,
+  description: null,
+  arDescription: null,
+  ingredients: null,
+  arIngredients: null,
+  tips: null,
+  arTips: null,
+  notes: null,
+  arNotes: null,
+  quantity: 0,
   price: 0,
   discount: 0,
-  availability: false,
-  quantity: 0,
-  coverImg: null,
-  images: null,
+  gender: null,
+  createdAt: null,
+  updatedAt: null,
+  brand: {
+    id: null,
+    title: null,
+    arName: null,
+  },
+  category: {
+    id: null,
+    title: null,
+    arName: null,
+    description: null,
+    arDescription: null,
+  },
+  subCategory: {
+    id: null,
+    title: null,
+    arName: null,
+  },
+  itemsCategory: {
+    id: null,
+    title: null,
+    arName: null,
+  },
+  propreties: [
+    {
+      id: null,
+      type: null,
+      value: null,
+      price: null,
+    },
+    {
+      id: null,
+      type: null,
+      value: null,
+      price: null,
+    },
+  ],
+  image: [
+    {
+      id: null,
+      image: null,
+      productId: null,
+    },
+    {
+      id: null,
+      image: null,
+      productId: null,
+    },
+  ],
+  availability: null,
+  hasProprety: null,
+  deletedPropeties: [],
 });
 const currentImage = ref(null);
+const isEng = ref(false);
+const loadingData = ref(false);
+const isImageHovered = ref(false);
+const fileInputImage = ref(null);
 const creatDialog = ref(false);
 const editDialog = ref(false);
 const deleteDialog = ref(false);
-const addSizeDialog = ref(false);
 const showImageDialog = ref(false);
-const isCoverImageHovered = ref(false);
-const inputCoverImage = ref(null);
 const addSizeInput = ref(null);
-
-const products = ref([
-  {
-    id: 1,
-    arName: "لينوفو ايداباد 3 أل 15313",
-    enName: "Lenovo idea P3 L15313",
-    arVariant: "",
-    enVariant: "",
-    stockLevel: 20,
-    category: {
-      id: 4,
-      arName: "حاسوب محمول",
-      enName: "Laptop",
-    },
-    company: {
-      id: 4,
-      arName: "لينوفو",
-      enName: "Lenovo",
-    },
-    price: 600,
-    discount: 0,
-    availability: true,
-    quantity: 13,
-    coverImg: null,
-    images: [],
-  },
-  {
-    id: 2,
-    arName: "ريد مي 12 سي",
-    enName: "Ridme 12C",
-    arVariant: "",
-    enVariant: "",
-    stockLevel: 21,
-    category: {
-      id: 6,
-      arName: " هاتف محمول ",
-      enName: " Mobile",
-    },
-    company: {
-      id: 6,
-      arName: "شاومي",
-      enName: "Xaiome",
-    },
-    price: 150,
-    discount: 0,
-    availability: true,
-    quantity: 13,
-    coverImg: null,
-    images: [],
-  },
-  {
-    id: 3,
-    arName: "سماعات ايبود 3",
-    enName: "Headphones ipod 3",
-    arVariant: "",
-    enVariant: "",
-    stockLevel: 19,
-    category: {
-      id: 5,
-      arName: " محلقات تقنية",
-      enName: "Tech Accessorie",
-    },
-    company: {
-      id: 5,
-      arName: "أبل",
-      enName: "Apple",
-    },
-    price: 230,
-    discount: 0,
-    availability: true,
-    quantity: 3,
-    coverImg: null,
-    images: [],
-  },
-  {
-    id: 4,
-    arName: "  سماعات إتش 12 إل 5",
-    enName: "Headphones H12L5",
-    arVariant: "",
-    enVariant: "",
-    stockLevel: 19,
-    category: {
-      id: 5,
-      arName: " محلقات تقنية",
-      enName: "Tech Accessorie",
-    },
-    company: null,
-    price: 42,
-    discount: 10,
-    availability: false,
-    quantity: 0,
-    coverImg: null,
-    images: [],
-  },
-  {
-    id: 5,
-    arName: "لوحة مفاتيح في أس 1456",
-    enName: "Keyboard VS1456",
-    arVariant: "",
-    enVariant: "",
-    stockLevel: 22,
-    category: {
-      id: 5,
-      arName: " محلقات تقنية",
-      enName: "Tech Accessorie",
-    },
-    company: null,
-    price: 50,
-    discount: 2,
-    avilabilty: true,
-    quantity: 20,
-    coverImg: null,
-    images: [],
-  },
-  {
-    id: 6,
-    arName: "فأرة أر إل 23",
-    enName: "Mouse RL23",
-    arVariant: "",
-    enVariant: "",
-    stockLevel: 18,
-    category: {
-      id: 5,
-      arName: " محلقات تقنية",
-      enName: "Tech Accessorie",
-    },
-    company: {
-      id: 7,
-      arName: "رايزير",
-      enName: "Razer",
-    },
-    price: 85,
-    discount: 10,
-    availability: true,
-    quantity: 50,
-    coverImg: null,
-    images: [],
-  },
-]);
+const products = ref(null);
 const newProduct = ref({
-  arName: "",
-  enName: "",
-  arVariant: "",
-  enVariant: "",
-  category: "",
-  company: "",
-  stockLevel: 0,
-  brand: "",
+  name: null,
+  arName: null,
+  description: null,
+  arDescription: null,
+  ingredients: null,
+  arIngredients: null,
+  tips: null,
+  arTips: null,
+  notes: null,
+  arNotes: null,
+  quantity: 0,
   price: 0,
   discount: 0,
-  availability: false,
-  quantity: 0,
-  coverImg: null,
-  images: [],
+  gender: null,
+  propreties: [],
+  image: [],
+  availability: null,
+  hasProprety: null,
 });
-const categories = ref([
-  {
-    id: 1,
-    arName: "أجبان وألبان",
-    enName: "Cheese and Dairy",
-  },
-  {
-    id: 2,
-    arName: "منظفات ",
-    enName: "Detergents",
-  },
-  {
-    id: 3,
-    arName: "معلبات ",
-    enName: "Canned Food",
-  },
-  {
-    id: 4,
-    arName: "حاسوب محمول",
-    enName: "Laptop",
-  },
-  {
-    id: 5,
-    arName: " محلقات تقنية",
-    enName: "Tech Accessorie",
-  },
-  {
-    id: 6,
-    arName: " هاتف محمول ",
-    enName: " Mobile",
-  },
+const categories = ref(null);
+const subCategories = ref(null);
+const items = ref(null);
+const brands = ref(null);
+const genders = ref([
+  { lable: "Male", value: "male" },
+  { lable: "Female", value: "female" },
 ]);
-const companies = ref([
-  {
-    id: 1,
-    arName: "المراعي",
-    enName: "Al-Mara2e",
-  },
-  {
-    id: 2,
-    arName: "التغذية",
-    enName: "Al-Taghzea",
-  },
-  {
-    id: 3,
-    arName: "برسيل",
-    enName: "Barsel",
-  },
-  {
-    id: 4,
-    arName: "لينوفو",
-    enName: "Lenovo",
-  },
-  {
-    id: 5,
-    arName: "أبل",
-    enName: "Apple",
-  },
-  {
-    id: 6,
-    arName: "شاومي",
-    enName: "Xaiome",
-  },
-  {
-    id: 7,
-    arName: "رايزير",
-    enName: "Razer",
-  },
-]);
+const proparetiesType = ["size", "color"];
+const proparetyTypeSelected = ref("size");
+const filteredSubCategories = ref(null);
+const filteredItems = ref(null);
+const newImages = ref([]);
+const images = ref(null);
+const deletedImages = ref([]);
+const deleteProparety = ref([]);
+// Computed
+const proparetyValidationCreate = computed(() => {
+  let counter = 0;
+  let proparetiesErrors = { value: [], price: [], isProparetiesValid: true };
+  if (newProduct.value.hasProprety) {
+    newProduct.value.propreties.forEach((i) => {
+      if (!i.value) {
+        proparetiesErrors.value.push({
+          message: "dash.storage.value_is_required",
+        });
+        counter++;
+      } else {
+        proparetiesErrors.value.push(null);
+      }
+      if (!i.price) {
+        proparetiesErrors.price.push({
+          message: "dash.storage.price_is_required",
+        });
+        counter++;
+      } else {
+        proparetiesErrors.price.push(null);
+      }
+    });
+  }
+  if (counter > 0) {
+    proparetiesErrors.isProparetiesValid = false;
+  }
+  return proparetiesErrors;
+});
+const proparetyValidationEdit = computed(() => {
+  let counter = 0;
+  let proparetiesErrors = { value: [], price: [], isProparetiesValid: true };
+  if (currentData.value.hasProprety) {
+    currentData.value.propreties.forEach((i) => {
+      if (!i.value) {
+        proparetiesErrors.value.push({
+          message: "dash.storage.value_is_required",
+        });
+        counter++;
+      } else {
+        proparetiesErrors.value.push(null);
+      }
+      if (!i.price) {
+        proparetiesErrors.price.push({
+          message: "dash.storage.price_is_required",
+        });
+        counter++;
+      } else {
+        proparetiesErrors.price.push(null);
+      }
+    });
+  }
+  if (counter > 0) {
+    proparetiesErrors.isProparetiesValid = false;
+  }
+  return proparetiesErrors;
+});
+
+const filteredProduct = computed(() => {
+  if (!searchValue.value) {
+    return products.value;
+  }
+  return products.value.filter(
+    (item) =>
+      item.name.toLowerCase().includes(searchValue.value.toLowerCase()) ||
+      item.arName.toLowerCase().includes(searchValue.value.toLowerCase()) ||
+      item.description.toLowerCase().includes(searchValue.value.toLowerCase()) ||
+      item.arDescription.toLowerCase().includes(searchValue.value.toLowerCase()) ||
+      item.ingredients.toLowerCase().includes(searchValue.value.toLowerCase()) ||
+      item.arIngredients.toLowerCase().includes(searchValue.value.toLowerCase()) ||
+      item.tips.toLowerCase().includes(searchValue.value.toLowerCase()) ||
+      item.arTips.toLowerCase().includes(searchValue.value.toLowerCase()) ||
+      item.notes.toLowerCase().includes(searchValue.value.toLowerCase()) ||
+      item.arNotes.toLowerCase().includes(searchValue.value.toLowerCase()) ||
+      item.category.title.toLowerCase().includes(searchValue.value.toLowerCase()) ||
+      item.category.name.toLowerCase().includes(searchValue.value.toLowerCase()) ||
+      item.subCategory.title.toLowerCase().includes(searchValue.value.toLowerCase()) ||
+      item.subCategory.name.toLowerCase().includes(searchValue.value.toLowerCase()) ||
+      item.itemsCategory.title.toLowerCase().includes(searchValue.value.toLowerCase()) ||
+      item.itemsCategory.name.toLowerCase().includes(searchValue.value.toLowerCase()) ||
+      item.brand.title.toLowerCase().includes(searchValue.value.toLowerCase()) ||
+      item.brand.name.toLowerCase().includes(searchValue.value.toLowerCase()) ||
+      item.id.toString().includes(searchValue.value)
+  );
+});
 
 // Methods
 function openEditDialog(data) {
   currentData.value = data;
+  filterSubCategory(currentData.value.category.id);
+  filterItem(currentData.value.subCategory.id);
+  if (currentData.value.propreties.length > 0) {
+    proparetyTypeSelected.value = currentData.value.propreties[0].type;
+  }
+  console.log(proparetyTypeSelected.value);
+  console.log(currentData.value);
   editDialog.value = true;
 }
 function openDeleteDialog(data) {
   currentData.value = data;
   deleteDialog.value = true;
 }
-function openAddSizeDialog(data) {
-  currentData.value = data;
-  addSizeDialog.value = true;
-}
-function viewCoverImage(data) {
+function viewImage(data) {
   currentImage.value = data;
   showImageDialog.value = true;
 }
-function createAddCoverImage(event) {
+function trasformIntoURL(file) {
+  return URL.createObjectURL(file);
+}
+function addImageCreate(event) {
+  const file = event.target.files?.[0]; 
+  if (!file) {
+    console.error("No file selected");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    newProduct.value.image.push(file);
+  };
+  // reader.readAsDataURL(file);
+}
+function addImageEdit(event) {
   const file = event.target.files?.[0];
   if (!file) {
     console.error("No file selected");
     return;
   }
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    newProduct.value.coverImg = e.target.result; // Add the image to the gallery
-  };
-  reader.readAsDataURL(file); // Read the file as a Data URL
+
+  newImages.value.push(file);
+  currentData.value.images.push(file);
 }
-function editAddCoverImage(event) {
-  const file = event.target.files?.[0];
-  if (!file) {
-    console.error("No file selected");
-    return;
+
+function deleteProparetyEdit(index) {
+  deleteProparety.value.push(currentData.value.propreties[index].id);
+
+  currentData.value.propreties.splice(index, 1);
+  console.log(deleteProparety.value);
+  console.log(currentData.value.propreties);
+}
+function deleteImageEdit(index) {
+  console.log(currentData.value.images[index].id);
+  if (currentData.value.images[index].id) {
+    deletedImages.value.push(currentData.value.images[index].id);
   }
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    currentData.value.coverImg = e.target.result; // Add the image to the gallery
-  };
-  reader.readAsDataURL(file); // Read the file as a Data URL
+  currentData.value.images.splice(index, 1);
+  console.log(deletedImages.value);
 }
-function addSize() {
-  currentData.value.quantity = newProduct.value.quantity;
-  newProduct.value.quantity = 0;
-  addSizeDialog.value = false;
+function getProducts() {
+  axios
+    .get("/control/list/product", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("_token")}`,
+      },
+    })
+    .then((res) => {
+      if (res.status == 200) {
+        products.value = res.data;
+      }
+    })
+    .catch((e) => {
+      console.log(e);
+    });
 }
+function filterSubCategory(categoryId) {
+  filteredSubCategories.value = subCategories.value.filter(
+    (item) => item.category.id == categoryId
+  );
+}
+function filterItem(subCategoryId) {
+  filteredItems.value = items.value.filter(
+    (item) => item.sub_categories.id == subCategoryId
+  );
+}
+function createProduct() {
+  loadingData.value = true;
+  newProduct.value.propreties.forEach((i) => {
+    console.log(i.id);
+    i.type = proparetyTypeSelected.value;
+  });
+  console.log(newProduct.value);
+  axios
+    .post("/control/new/product", newProduct.value, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("_token")}`,
+        "Content-Type": "multipart/form-data",
+      },
+    })
+    .then((res) => {
+      if (res.status == 201) {
+        loadingData.value = false;
+        window.location.reload();
+      }
+    })
+    .catch((e) => {
+      loadingData.value = false;
+      console.log(e);
+    });
+}
+function updateProduct() {
+  loadingData.value = true;
+  currentData.value.image = newImages.value;
+  currentData.value.deletedImages = deletedImages.value;
+  currentData.value.deletedPropreties = deleteProparety.value;
+
+  currentData.value.propreties.forEach((i) => {
+    i.type = proparetyTypeSelected.value;
+  });
+  currentData.value.categoryId = currentData.value.category.id;
+  currentData.value.subCategoryId = currentData.value.subCategory.id;
+  currentData.value.itemsId = currentData.value.itemsCategory.id;
+  currentData.value.brandId = currentData.value.brand.id;
+
+  axios
+    .put(`/control/modify/product/${currentData.value.id}`, currentData.value, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("_token")}`,
+        "Content-Type": "multipart/form-data",
+      },
+    })
+    .then((res) => {
+      if (res.status == 200) {
+        loadingData.value = false;
+        window.location.reload();
+      }
+    })
+    .catch((e) => {
+      loadingData.value = false;
+      console.log(e);
+    });
+}
+function deleteProduct() {
+  loadingData.value = true;
+  axios
+    .delete(`/control/delete/product/${currentData.value.id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("_token")}`,
+      },
+    })
+    .then((res) => {
+      if (res.status == 200) {
+        loadingData.value = false;
+        window.location.reload();
+      }
+    })
+    .catch((e) => {
+      loadingData.value = false;
+      console.log(e);
+    });
+}
+function getCategories() {
+  axios
+    .get("/control/list/category", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("_token")}`,
+      },
+    })
+    .then((res) => {
+      if (res.status === 200) {
+        categories.value = res.data;
+      }
+    })
+    .catch((e) => {
+      console.log(e);
+    });
+}
+function getSubCategories() {
+  axios
+    .get("control/list/subcategory", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("_token")}`,
+      },
+    })
+    .then((res) => {
+      if (res.status == 200) {
+        subCategories.value = res.data;
+      }
+    })
+    .catch((e) => {
+      console.log(e);
+    });
+}
+function getItems() {
+  axios
+    .get("/control/list/subitems", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("_token")}`,
+      },
+    })
+    .then((res) => {
+      if (res.status === 200) {
+        items.value = res.data;
+      }
+    })
+    .catch((e) => {
+      console.log(e);
+    });
+}
+function getBrands() {
+  axios
+    .get("/control/list/brand", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("_token")}`,
+      },
+    })
+    .then((res) => {
+      if (res.status == 200) {
+        brands.value = res.data;
+      }
+    })
+    .catch((e) => {
+      console.log(e);
+    });
+}
+const createResolver = ({ values }) => {
+  const errors = {};
+
+  if (!values.name) {
+    errors.name = [{ message: "dash.name_in_english_is_required" }];
+  }
+  if (!values.arName) {
+    errors.arName = [{ message: "dash.name_in_arabic_is_required" }];
+  }
+
+  if (!values.description) {
+    errors.description = [
+      { message: "dash.description_in_english_is_required" },
+    ];
+  }
+  if (!values.arDescription) {
+    errors.arDescription = [
+      { message: "dash.description_in_arabic_is_required" },
+    ];
+  }
+
+  if (!values.ingredients) {
+    errors.ingredients = [
+      { message: "dash.storage.ingredients_in_english_is_required" },
+    ];
+  }
+  if (!values.arIngredients) {
+    errors.arIngredients = [
+      { message: "dash.storage.ingredients_in_arabic_is_required" },
+    ];
+  }
+
+  if (!values.tips) {
+    errors.tips = [{ message: "dash.storage.tips_in_english_is_required" }];
+  }
+  if (!values.arTips) {
+    errors.arTips = [{ message: "dash.storage.tips_in_arabic_is_required" }];
+  }
+
+  if (!values.notes) {
+    errors.notes = [{ message: "dash.storage.notes_in_english_is_required" }];
+  }
+  if (!values.arNotes) {
+    errors.arNotes = [{ message: "dash.storage.notes_in_arabic_is_required" }];
+  }
+
+  if (!values.categories) {
+    errors.categories = [
+      { message: "dash.storage.you_must_select_one_of_cateogries" },
+    ];
+  }
+  if (!values.sub_categories) {
+    errors.sub_categories = [
+      { message: "dash.storage.you_must_select_one_of_sub-categories" },
+    ];
+  }
+  if (!values.items) {
+    errors.items = [{ message: "dash.storage.you_must_select_one_of_items" }];
+  }
+  if (!values.brands) {
+    errors.brands = [{ message: "dash.storage.you_must_select_one_of_brands" }];
+  }
+
+  return { errors };
+};
+const editResolver = () => {
+  const errors = {};
+
+  if (!currentData.value.name) {
+    errors.name = [{ message: "dash.name_in_english_is_required" }];
+  }
+  if (!currentData.value.arName) {
+    errors.arName = [{ message: "dash.name_in_arabic_is_required" }];
+  }
+
+  if (!currentData.value.description) {
+    errors.description = [
+      { message: "dash.description_in_english_is_required" },
+    ];
+  }
+  if (!currentData.value.arDescription) {
+    errors.arDescription = [
+      { message: "dash.description_in_arabic_is_required" },
+    ];
+  }
+
+  if (!currentData.value.ingredients) {
+    errors.ingredients = [
+      { message: "dash.storage.ingredients_in_english_is_required" },
+    ];
+  }
+  if (!currentData.value.arIngredients) {
+    errors.arIngredients = [
+      { message: "dash.storage.ingredients_in_arabic_is_required" },
+    ];
+  }
+
+  if (!currentData.value.tips) {
+    errors.tips = [{ message: "dash.storage.tips_in_english_is_required" }];
+  }
+  if (!currentData.value.arTips) {
+    errors.arTips = [{ message: "dash.storage.tips_in_arabic_is_required" }];
+  }
+
+  if (!currentData.value.notes) {
+    errors.notes = [{ message: "dash.storage.notes_in_english_is_required" }];
+  }
+  if (!currentData.value.arNotes) {
+    errors.arNotes = [{ message: "dash.storage.notes_in_arabic_is_required" }];
+  }
+
+  if (!currentData.value.category) {
+    errors.categories = [
+      { message: "dash.storage.you_must_select_one_of_cateogries" },
+    ];
+  }
+  if (!currentData.value.subCategory) {
+    errors.sub_categories = [
+      { message: "dash.storage.you_must_select_one_of_sub-categories" },
+    ];
+  }
+  if (!currentData.value.itemsCategory) {
+    errors.items = [{ message: "dash.storage.you_must_select_one_of_items" }];
+  }
+  if (!currentData.value.brand) {
+    errors.brands = [{ message: "dash.storage.you_must_select_one_of_brands" }];
+  }
+
+  return { errors };
+};
+const onFormSubmitCreate = ({ valid }) => {
+  if (valid && proparetyValidationCreate.value.isProparetiesValid) {
+    createProduct();
+    console.log("Created!!");
+  }
+};
+const onFormSubmitEdit = ({ valid }) => {
+  if (valid && proparetyValidationEdit.value.isProparetiesValid) {
+    updateProduct();
+    console.log("Updated!!");
+  }
+};
 </script>
 
 <style scoped>
@@ -1024,22 +2125,61 @@ function addSize() {
 ::v-deep .p-datatable-sort-icon {
   color: var(--primary-text-color-500) !important;
 }
+/* Images */
+.image-container {
+  width: 13%;
+  height: 7.5rem;
+}
+.product-imgs {
+  width: 100%;
+  height: 100%;
+  border-radius: 0.8rem;
+}
+
+.overlay-imgs {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  gap: 10px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  border-radius: 0.8rem;
+}
+.image-container:hover .overlay-imgs {
+  opacity: 1;
+  pointer-events: auto;
+}
+.image-container:hover .product-imgs {
+  filter: blur(3px);
+}
+.overlay-imgs div {
+  border-radius: 0;
+  height: fit-content;
+  background: rgba(48, 48, 48, 0.5);
+  color: white;
+}
+.full-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 0.5rem;
+  background-attachment: fixed;
+  background-size: cover;
+  /* box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); */
+}
 
 @media (min-width: 768px) {
-  #name-container,
-  #variant-container,
-  #description-container,
-  #ccq-container,
-  #payment-container {
+  .section,
+  .section-3 {
     justify-content: space-between;
   }
-  #name-container div,
-  #variant-container div,
-  #description-container div,
-  #payment-container div {
+  .section div {
     width: 40%;
   }
-  #ccq-container div {
+  .section-3 div {
     width: 30%;
   }
   .cover-image {
@@ -1048,21 +2188,15 @@ function addSize() {
 }
 
 @media (max-width: 768px) {
-  #name-container,
-  #variant-container,
-  #description-container,
-  #ccq-container,
-  #payment-container {
+  .section,
+  .section-3 {
     justify-content: center;
   }
-  #name-container div,
-  #variant-container div,
-  #description-container div,
-  #payment-container div {
+  .section div {
     width: 80%;
     margin: 1rem 0;
   }
-  #ccq-container div {
+  .section-3 div {
     width: 60%;
   }
   .cover-image {

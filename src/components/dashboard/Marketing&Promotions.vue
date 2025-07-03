@@ -27,7 +27,7 @@
             paginator
             :rows="5"
             :rowsPerPageOptions="[5, 10, 20, 50]"
-            class="custom-datatable text-nowrap"
+            :class="['custom-datatable text-nowrap',isEng? 'ltr' : 'rtl']"
             :style="{ width: '95%' }"
           >
             <Column header="Campaigns name">
@@ -84,7 +84,7 @@
             paginator
             :rows="5"
             :rowsPerPageOptions="[5, 10, 20, 50]"
-            class="custom-datatable text-nowrap"
+            :class="['custom-datatable text-nowrap', isEng ? 'ltr' : 'rtl']"
             :style="{ width: '95%' }"
           >
             <Column field="code" header="Discount code" />
@@ -127,6 +127,7 @@
     :closable="true"
     header="Create a discount code"
     :breakpoints="{ '1199px': '85vw', '575px': '95vw' }"
+    :dir="isEng ? 'ltr' : 'rtl'"
   >
     <div
       class="d-flex justify-content-center w-100 align-items-center flex-wrap"
@@ -199,6 +200,7 @@
     :header="'edit #' + currentData.id + ' discount code'"
     :breakpoints="{ '1199px': '85vw', '575px': '95vw' }"
     @hide="makeCurrentDataNull"
+    :dir="isEng ? 'ltr' : 'rtl'"
   >
     <div
       class="d-flex justify-content-center w-100 align-items-center flex-wrap"
@@ -273,6 +275,7 @@
     :style="{ width: '35rem' }"
     :breakpoints="{ '1199px': '85vw', '575px': '95vw' }"
     @hide="makeCurrentDataNull"
+    :dir="isEng ? 'ltr' : 'rtl'"
   >
     <span>
       Are you sure you want to delete "{{ currentData.code }}" code ?</span
@@ -304,11 +307,19 @@ import AccordionContent from "primevue/accordioncontent";
 import ToggleSwitch from "primevue/toggleswitch";
 import DatePicker from "primevue/datepicker";
 
-import { ref, computed } from "vue";
+import { ref, computed, onBeforeMount } from "vue";
+
+// Hooks
+onBeforeMount(() => {
+  if (localStorage.getItem("locale") === "en") {
+    isEng.value = true;
+  }
+});
 
 // Data
 const searchCampaignsValue = ref(null);
 const searchDiscountValue = ref(null);
+const isEng = ref(false);
 const createDialog = ref(false);
 const editDialog = ref(false);
 const deleteDialog = ref(false);
@@ -433,10 +444,18 @@ const filteredCampaigns = computed(() => {
   }
   return campaigns.value.filter(
     (item) =>
-      item.enName.toLowerCase().includes(searchCampaignsValue.value.toLowerCase()) ||
-      item.arName.toLowerCase().includes(searchCampaignsValue.value.toLowerCase()) ||
-      item.status.toLowerCase().includes(searchCampaignsValue.value.toLowerCase()) ||
-      item.type.toLowerCase().includes(searchCampaignsValue.value.toLowerCase()) ||
+      item.enName
+        .toLowerCase()
+        .includes(searchCampaignsValue.value.toLowerCase()) ||
+      item.arName
+        .toLowerCase()
+        .includes(searchCampaignsValue.value.toLowerCase()) ||
+      item.status
+        .toLowerCase()
+        .includes(searchCampaignsValue.value.toLowerCase()) ||
+      item.type
+        .toLowerCase()
+        .includes(searchCampaignsValue.value.toLowerCase()) ||
       item.startDate.toString().includes(searchCampaignsValue.value) ||
       item.endDate.toString().includes(searchCampaignsValue.value) ||
       item.id.toString().includes(searchCampaignsValue.value)
@@ -449,7 +468,9 @@ const filteredDiscountCodes = computed(() => {
   }
   return discountCodes.value.filter(
     (item) =>
-      item.code.toLowerCase().includes(searchDiscountValue.value.toLowerCase()) ||
+      item.code
+        .toLowerCase()
+        .includes(searchDiscountValue.value.toLowerCase()) ||
       item.status.toString().includes(searchDiscountValue.value) ||
       item.usageCount.toString().includes(searchDiscountValue.value) ||
       item.startDate.toString().includes(searchDiscountValue.value) ||

@@ -31,7 +31,7 @@
         removableSort
         dataKey="id"
         filterDisplay="row"
-        class="custom-datatable"
+        :class="['custom-datatable', isEng ? 'ltr' : 'rtl']"
         :style="{ width: '95%' }"
       >
         <Column header="Id" class="width-10">
@@ -104,7 +104,7 @@
     :closable="true"
     :header="'edit #' + currentData.id + ' order'"
     :breakpoints="{ '1199px': '85vw', '575px': '95vw' }"
-    
+    :dir="isEng ? 'ltr' : 'rtl'"
   >
     <div
       class="w-100 d-flex justify-content-center align-items-center flex-wrap"
@@ -159,54 +159,51 @@
       <Divider />
       <div class="w-100 mt-2 mb-3 px-1">
         <div v-if="currentData.products.length > 0">
-          <DataTable
-          :value="filteredProducts"
-          class="w-100"
-        >
-          <Column header="id">
-            <template #body="slotProps">
-              <span>#{{ slotProps.data.product.id }}</span>
-            </template>
-          </Column>
-          <Column header="Name">
-            <template #body="slotProps">
-              <span v-if="1 === 1">{{ slotProps.data.product.enName }}</span>
-              <span v-else>{{ slotProps.data.product.arName }}</span>
-            </template>
-          </Column>
-          <Column header="Quantity">
-            <template #body="slotProps">
-              <div class="w-50">
-                <InputNumber
-                  v-model="tempOrder.products[slotProps.index].quantity"
-                  showButtons
-                  buttonLayout="horizontal"
-                  :step="1"
-                  :min="0"
-                  fluid
-                >
-                  <template #incrementbuttonicon>
-                    <span class="pi pi-plus" />
-                  </template>
-                  <template #decrementbuttonicon>
-                    <span class="pi pi-minus" />
-                  </template>
-                </InputNumber>
-              </div>
-            </template>
-          </Column>
-          <Column header="">
-            <template #body="slotProps">
-              <Button
-                icon="pi pi-trash"
-                severity="danger"
-                variant="text"
-                class="mx-1"
-                @click="deleteProduct(slotProps.index)"
-              ></Button>
-            </template>
-          </Column>
-        </DataTable>
+          <DataTable :value="currentData.products" class="w-100">
+            <Column header="id">
+              <template #body="slotProps">
+                <span>#{{ slotProps.data.product.id }}</span>
+              </template>
+            </Column>
+            <Column header="Name">
+              <template #body="slotProps">
+                <span v-if="1 === 1">{{ slotProps.data.product.enName }}</span>
+                <span v-else>{{ slotProps.data.product.arName }}</span>
+              </template>
+            </Column>
+            <Column header="Quantity">
+              <template #body="slotProps">
+                <div class="w-50">
+                  <InputNumber
+                    v-model="tempOrder.products[slotProps.index].quantity"
+                    showButtons
+                    buttonLayout="horizontal"
+                    :step="1"
+                    :min="0"
+                    fluid
+                  >
+                    <template #incrementbuttonicon>
+                      <span class="pi pi-plus" />
+                    </template>
+                    <template #decrementbuttonicon>
+                      <span class="pi pi-minus" />
+                    </template>
+                  </InputNumber>
+                </div>
+              </template>
+            </Column>
+            <Column header="">
+              <template #body="slotProps">
+                <Button
+                  icon="pi pi-trash"
+                  severity="danger"
+                  variant="text"
+                  class="mx-1"
+                  @click="deleteProduct(slotProps.index)"
+                ></Button>
+              </template>
+            </Column>
+          </DataTable>
         </div>
         <div
           v-else
@@ -235,6 +232,7 @@
     :header="'Delete #' + currentData.id + ' order'"
     :style="{ width: '35rem' }"
     :breakpoints="{ '1199px': '85vw', '575px': '95vw' }"
+    :dir="isEng ? 'ltr' : 'rtl'"
   >
     <span v-if="1 == 1">
       Are you sure you want to delete {{ currentData.customer.name }}'s order
@@ -270,9 +268,17 @@ import Divider from "primevue/divider";
 
 import { FilterMatchMode } from "@primevue/core/api";
 
-import { ref , computed } from "vue";
+import { ref, computed, onBeforeMount } from "vue";
+
+// Hooks
+onBeforeMount(() => {
+  if (localStorage.getItem("locale") === "en") {
+    isEng.value = true;
+  }
+});
 
 // Data
+const isEng = ref(false);
 const searchValue = ref(null);
 const statuses = ref(["Delivered", "Completed", "Returned"]);
 const filters = ref({
@@ -491,7 +497,6 @@ const orders = ref([
         },
         quantity: 3,
       },
-      ,
     ],
     totalPrice: 915,
     discount: 0,
@@ -1052,18 +1057,20 @@ const orders = ref([
 ]);
 
 // Computed
-const filteredProducts = computed(()=>{
+const filteredProducts = computed(() => {
   if (!searchValue.value) {
     return orders.value;
   }
   return orders.value.filter(
     (item) =>
-      item.products.filter((productItem)=> productItem.product.enName ).toLowerCase().includes(searchValue.value.toLowerCase()) ||
+      item.products
+        .filter((productItem) => productItem.product.enName)
+        .toLowerCase()
+        .includes(searchValue.value.toLowerCase()) ||
       item.arName.toLowerCase().includes(searchValue.value.toLowerCase()) ||
       item.id.toString().includes(searchValue.value)
   );
-})
-
+});
 
 // Methods
 function openEditDialog(data) {
@@ -1086,7 +1093,6 @@ function deleteOrder() {
 function deleteProduct(index) {
   currentData.value.products.pop(index);
 }
-
 </script>
 
 <style scoped>

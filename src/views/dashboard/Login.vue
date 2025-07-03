@@ -16,9 +16,7 @@
             class="d-flex flex-wrap justify-content-center align-items-center w-100"
           >
             <div class="w-100 d-flex justify-content-center align-items-center">
-              <img
-                src="@/assets/images/dashboard/logo.svg"
-              />
+              <img src="@/assets/images/dashboard/logo.svg" />
             </div>
             <div class="w-100 d-flex justify-content-center align-items-center">
               <span class="text-main fs-4" :style="{ fontFamily: 'Rokkitt' }"
@@ -79,6 +77,7 @@ import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import FloatLabel from "primevue/floatlabel";
 import Password from "primevue/password";
+import axios from "axios";
 import { ref } from "vue";
 import router from "@/router";
 // Data
@@ -88,7 +87,27 @@ const lodingData = ref(false);
 
 // Methods
 const isAuth = () => {
-  router.push({ name: "Overview" });
+  lodingData.value = true;
+  try {
+    axios
+      .post("/auth/signin", {
+        email: email.value,
+        password: password.value,
+      })
+      .then((res) => {
+        if (res.status === 400) {
+          console.log("400");
+        } else if (res.status === 200) {
+          localStorage.setItem("_token", res.data.access);
+
+          router.push({ name: "Overview" });
+        }
+        lodingData.value = false;
+      });
+  } catch (e) {
+    lodingData.value = false;
+    console.log(e);
+  }
 };
 </script>
 
@@ -119,15 +138,15 @@ const isAuth = () => {
   );
 }
 @media (min-width: 687px) {
-  #logo-container  img {
+  #logo-container img {
     width: 9rem;
     height: 9rem;
   }
 }
-@media (max-width: 686px){
- #logo-container  img {
-    width:4.5rem;
-    height:4.5rem;
+@media (max-width: 686px) {
+  #logo-container img {
+    width: 4.5rem;
+    height: 4.5rem;
   }
 }
 </style>

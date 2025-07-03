@@ -50,7 +50,6 @@ function sideToggleShow() {
 </script>
 
 <style scoped>
-
 main {
   transition: all 0.3s ease;
   /* max-width: calc(100% - 15rem); */
@@ -68,14 +67,32 @@ main {
 }
 
 ::v-deep
-  .custom-datatable
+  .custom-datatable:is(.ltr)
   .p-datatable-thead
   > tr:first-child
   > th:first-child {
   border-top-left-radius: 0.5rem;
 }
-::v-deep .custom-datatable .p-datatable-thead > tr:first-child > th:last-child {
+::v-deep
+  .custom-datatable:is(.ltr)
+  .p-datatable-thead
+  > tr:first-child
+  > th:last-child {
   border-top-right-radius: 0.5rem;
+}
+::v-deep
+  .custom-datatable:is(.rtl)
+  .p-datatable-thead
+  > tr:first-child
+  > th:first-child {
+  border-top-right-radius: 0.5rem;
+}
+::v-deep
+  .custom-datatable:is(.rtl)
+  .p-datatable-thead
+  > tr:first-child
+  > th:last-child {
+  border-top-left-radius: 0.5rem;
 }
 /* Buttons */
 ::v-deep .p-button:is(.custom-button) {

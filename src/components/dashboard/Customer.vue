@@ -31,7 +31,7 @@
               paginator
               :rows="5"
               :rowsPerPageOptions="[5, 10, 20, 50]"
-              class="custom-datatable text-nowrap"
+              :class="['custom-datatable text-nowrap', isEng? 'ltr' : 'rtl']"
               :style="{ width: '95%' }"
             >
               <Column field="name" header="Name"></Column>
@@ -69,7 +69,7 @@
               paginator
               :rows="5"
               :rowsPerPageOptions="[5, 10, 20, 50]"
-              class="custom-datatable text-nowrap"
+              :class="['custom-datatable text-nowrap ' , isEng? 'ltr' : 'rtl' ]"
               :style="{ width: '95%' }"
             >
               <Column header="Loyalty Program Name">
@@ -115,6 +115,7 @@
     :closable="true"
     header="Create a loyalty program"
     :breakpoints="{ '1199px': '85vw', '575px': '95vw' }"
+    :dir="isEng? 'ltr' : 'rtl'"
   >
     <div
       class="d-flex justify-content-center w-100 align-items-center flex-wrap"
@@ -203,6 +204,7 @@
     :header="'edit #' + currentData.id + ' Loyalty program'"
     :breakpoints="{ '1199px': '85vw', '575px': '95vw' }"
     @hide="makeCurrentDataNull"
+    :dir="isEng? 'ltr' : 'rtl'"
   >
     <div
       class="d-flex justify-content-center w-100 align-items-center flex-wrap"
@@ -292,6 +294,7 @@
     :style="{ width: '35rem' }"
     :breakpoints="{ '1199px': '85vw', '575px': '95vw' }"
     @hide="makeCurrentDataNull"
+    :dir="isEng? 'ltr' : 'rtl'"
   >
     <span v-if="1 == 1">
       Are you sure you want to delete {{ currentData.enName }} loyalty program
@@ -327,10 +330,17 @@ import AccordionPanel from "primevue/accordionpanel";
 import AccordionHeader from "primevue/accordionheader";
 import AccordionContent from "primevue/accordioncontent";
 
-import { ref , computed } from "vue";
+import { ref, computed, onBeforeMount } from "vue";
 
+// Hooks
+onBeforeMount(() => {
+  if (localStorage.getItem("locale") === "en") {
+    isEng.value = true;
+  }
+});
 // Data
 const searchValue = ref(null);
+const isEng = ref(false);
 const createDialog = ref(false);
 const editDialog = ref(false);
 const deleteDialog = ref(false);
@@ -442,9 +452,7 @@ const filteredCustomers = computed(() => {
   return customers.value.filter(
     (item) =>
       item.name.toLowerCase().includes(searchValue.value.toLowerCase()) ||
-      item.email
-        .toLowerCase()
-        .includes(searchValue.value.toLowerCase()) ||
+      item.email.toLowerCase().includes(searchValue.value.toLowerCase()) ||
       item.gender.toLowerCase().includes(searchValue.value.toLowerCase()) ||
       item.birthday.toLowerCase().includes(searchValue.value.toLowerCase()) ||
       item.id.toString().includes(searchValue.value) ||

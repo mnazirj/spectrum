@@ -1,57 +1,3 @@
-<!-- <template>
-  <Toolbar
-    class="nav"
-    pt:root="flex-nowrap bg-primary rounded-0 border-0 gap-0 p-0 border-bottom-1"
-    pt:start="w-25"
-    pt:center="w-50"
-    pt:end="w-25"
-  >
-    <template #start>
-      <div
-        class="w-100 h-100 d-flex align-items-center flex-wrap ps-4"
-        :style="{ backgroundColor: 'red' }"
-      >
-        <div class="w-100 d-flex align-item-center">
-          <img src="@/assets/images/dashboard/logo.svg" :style="{width:'5rem' , height:'4rem'}" />
-        </div>
-        <div class="w-100 d-flex align-item-center">
-          <p :style="{fontSize:'20px'}">Spectrum</p>
-        </div>
-      </div>
-    </template>
-    <template #center>
-      <div
-        class="w-100 d-flex flex-wrap align-items-center"
-        :style="{ 'background-color': 'green' }"
-      >
-        <div class="w-100 d-flex justify-content-end">
-          <div class="w-75 d-flex justify-content-end">
-            <div class="d-flex align-items-center w-75">Data</div>
-            <div class="d-flex justify-content-end align-items-center w-25">
-              Language
-            </div>
-          </div>
-        </div>
-        <div class="w-100 d-flex justify-content-center align-items-center">
-          Search
-        </div>
-      </div>
-    </template>
-    <template #end>
-      <div
-        class="w-100 d-flex justify-content-center align-items-center border-left-1"
-        :style="{ 'background-color': 'blue' }"
-      >
-        <div
-          class="w-75 d-flex justify-content-center align-content-center flex-wrap"
-        >
-          <div class="w-100 d-flex justify-content-center">User-img</div>
-          <div class="w-100 d-flex justify-content-center">username</div>
-        </div>
-      </div>
-    </template>
-  </Toolbar>
-</template> -->
 <template>
   <div>
     <nav
@@ -64,10 +10,18 @@
           <!-- Start -->
           <div id="start" class="width-20 d-flex">
             <div
-              class="w-100 h-100 d-flex align-items-center flex-wrap ps-4"
+              :class="[
+                'w-100 h-100 d-flex align-items-center flex-wrap',
+                isEng ? 'ps-4' : 'pe-4',
+              ]"
               :style="{}"
             >
-              <div class="w-50 d-flex align-item-center pt-1 ms-4">
+              <div
+                :class="[
+                  'w-50 d-flex align-item-center pt-1',
+                  isEng ? 'ms-4' : 'me-4',
+                ]"
+              >
                 <img
                   src="@/assets/images/dashboard/logo.svg"
                   :style="{ width: '5rem', height: '4rem' }"
@@ -100,7 +54,10 @@
                   </div>
                   <div
                     id="language"
-                    class="d-flex justify-content-end align-items-center pe-4"
+                    :class="[
+                      'd-flex justify-content-end align-items-center',
+                      isEng ? 'pe-4' : 'ps-4',
+                    ]"
                     :style="{ minWidth: '10rem' }"
                   >
                     <Select
@@ -116,7 +73,9 @@
                           <img
                             :alt="slotProps.value.label"
                             :src="slotProps.value.flag"
-                            :class="`mr-2 flag flag-${slotProps.value.code.toLowerCase()}`"
+                            :class="[
+                              `flag flag-${slotProps.value.code.toLowerCase()} mx-2`,
+                            ]"
                             style="width: 18px"
                           />
                           <div>{{ slotProps.value.name }}</div>
@@ -126,11 +85,19 @@
                         </span>
                       </template>
                       <template #option="slotProps">
-                        <div class="flex items-center">
+                        <div
+                          :class="[
+                            'flex items-center w-100',
+                            isEng ? 'me-2' : 'ms-2',
+                          ]"
+                          :dir="isEng ? 'ltr' : 'rtl'"
+                        >
                           <img
                             :alt="slotProps.option.label"
                             :src="slotProps.option.flag"
-                            :class="`mr-2 flag flag-${slotProps.option.code.toLowerCase()}`"
+                            :class="[
+                              `flag flag-${slotProps.option.code.toLowerCase()} mx-2`,
+                            ]"
                             style="width: 18px"
                           />
                           <div>{{ slotProps.option.name }}</div>
@@ -159,7 +126,7 @@
           </div>
 
           <!-- End -->
-          <div id="end" class="width-20 d-flex">
+          <div id="end" :class="['width-20 d-flex', isEng ? 'ltr' : 'rtl']">
             <div
               class="w-100 d-flex justify-content-center align-items-center"
               :style="{}"
@@ -224,7 +191,7 @@
           <Drawer
             v-model:visible="visibleDrawer"
             header="My Account"
-            position="right"
+            :position="isEng ? 'right' : 'left'"
           >
             <div class="d-flex flex-column justify-content-between h-100">
               <div
@@ -282,6 +249,7 @@
                   class="fs-5"
                   label="Logout"
                   fluid
+                  @click="logout"
                 />
               </div>
             </div>
@@ -348,9 +316,9 @@
               <div
                 id="show-more-container"
                 class="d-flex justify-content-center align-items-center w-100 border-top-1 text-decoration-underline fs-5"
-                :style="{ height: '10%' ,background:'#f9f9f9' , color:'#222' }"
+                :style="{ height: '10%', background: '#f9f9f9', color: '#222' }"
               >
-                <router-link  :to="{ name: 'Notification' }"
+                <router-link :to="{ name: 'Notification' }"
                   >Show More</router-link
                 >
               </div>
@@ -372,8 +340,17 @@ import Select from "primevue/select";
 import Popover from "primevue/popover";
 import Button from "primevue/button";
 import Drawer from "primevue/drawer";
+import axios from "axios";
 
-import { computed, onBeforeUnmount, onMounted, ref, defineProps } from "vue";
+import {
+  computed,
+  onBeforeUnmount,
+  onMounted,
+  onBeforeMount,
+  ref,
+  defineProps,
+} from "vue";
+import router from "@/router";
 
 // Props
 
@@ -392,6 +369,11 @@ const props = defineProps({
 });
 
 // Hooks
+onBeforeMount(() => {
+  if (localStorage.getItem("locale") === "en") {
+    isEng.value = true;
+  }
+});
 onMounted(() => {
   updateTime();
   intervalId = setInterval(updateTime, 1000);
@@ -419,6 +401,7 @@ onBeforeUnmount(() => {
 
 // Data
 const searchValue = ref(null);
+const isEng = ref(false);
 const currentDate = ref(new Date().toISOString().split("T")[0]);
 const currentTime = ref(null);
 let intervalId;
@@ -560,6 +543,28 @@ function updateTime() {
 const toggleNotification = (event) => {
   op.value.toggle(event);
 };
+function logout() {
+  try {
+    axios
+      .post(
+        "/auth/logout",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("_token")}`,
+          },
+        }
+      )
+      .then((res) => {
+        if (res.status === 200) {
+          router.push({ name: "Login" });
+          localStorage.removeItem("_token");
+        }
+      });
+  } catch (e) {
+    console.log(e);
+  }
+}
 
 function changeLocation() {
   localStorage.setItem("locale", languageSelected.value.code.toLowerCase());
@@ -599,11 +604,11 @@ function timeAgo(notificationDate) {
 #notification:hover {
   background: rgb(236, 236, 236);
 }
-#show-more-container a:hover{
+#show-more-container a:hover {
   color: rgb(0, 0, 0) !important;
   font-size: 1.3rem !important;
 }
-#show-more-container:has(a:hover){
+#show-more-container:has(a:hover) {
   background: #f2f2f2 !important;
 }
 @media (min-width: 686px) {
@@ -611,8 +616,11 @@ function timeAgo(notificationDate) {
     height: 9.5rem;
     max-height: 9.5rem;
   }
-  #end > div {
+  #end:is(.ltr) > div {
     border-left: 3px solid #fff;
+  }
+  #end:is(.rtl) > div {
+    border-right: 3px solid #fff;
   }
   #language {
     width: 25%;

@@ -26,7 +26,7 @@
         :rows="5"
         :rowsPerPageOptions="[5, 10, 20, 50]"
         removableSort
-        class="custom-datatable text-nowrap"
+        :class="['custom-datatable text-nowrap', isEng ? 'ltr' : 'rtl']"
         :style="{ width: '95%' }"
       >
         <template #paginatorstart> </template>
@@ -94,6 +94,7 @@
     :style="{ width: '35rem' }"
     :breakpoints="{ '1199px': '85vw', '575px': '95vw' }"
     data-pc-section="export"
+    :dir="isEng ? 'ltr' : 'rtl'"
   >
     <div
       class="d-flex justify-content-center align-items-center w-100 flex-wrap"
@@ -140,10 +141,19 @@ import FloatLabel from "primevue/floatlabel";
 import SelectButton from "primevue/selectbutton";
 import * as XLSX from "xlsx";
 
-import { ref } from "vue";
+import { ref, onBeforeMount } from "vue";
+
+// Hooks
+
+onBeforeMount(() => {
+  if (localStorage.getItem("locale") === "en") {
+    isEng.value = true;
+  }
+});
 
 // Data
 const searchValue = ref(null);
+const isEng = ref(false);
 const exportDialog = ref(false);
 const exportWays = ref(["Excel", "CSV"]);
 const exportWayValue = ref("Excel");

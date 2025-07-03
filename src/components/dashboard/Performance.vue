@@ -65,7 +65,7 @@
           fontSize: '2rem',
           textWrap: false,
           bold: true,
-          symbol:' sec',
+          symbol: ' sec',
         }"
         :label="{
           value: 'Site Speed',
@@ -96,7 +96,10 @@
     </div>
     <div class="section flex-wrap d-flex w-100 align-items-md-center mt-4">
       <div class="d-flex justify-content-center align-items-center">
-        <DataTable :value="topSellingProduct" class="custom-datatable w-100">
+        <DataTable
+          :value="topSellingProduct"
+          :class="['custom-datatable w-100', isEng ? 'ltr' : 'rtl']"
+        >
           <template #header>
             <div class="d-flex justify-content-center align-items-center w-100">
               <span class="fs-3 font-bold font-monospace"
@@ -151,9 +154,21 @@ import Card from "@/components/dashboard/Card.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Chart from "primevue/chart";
-import { ref, onMounted } from "vue";
+import { ref, onBeforeMount, onMounted } from "vue";
+
+// Hooks
+onBeforeMount(() => {
+  if (localStorage.getItem("locale") === "en") {
+    isEng.value = true;
+  }
+});
+onMounted(() => {
+  chartData.value = setChartData();
+  chartOptions.value = setChartOptions();
+});
 
 // Data
+const isEng = ref(false);
 const chartData = ref();
 const chartOptions = ref();
 const topSellingProduct = ref([
@@ -270,12 +285,6 @@ const topSellingProduct = ref([
     images: [],
   },
 ]);
-
-// Hooks
-onMounted(() => {
-  chartData.value = setChartData();
-  chartOptions.value = setChartOptions();
-});
 
 // Methods
 const setChartData = () => {
