@@ -9,9 +9,7 @@ const routes = [
     },
     beforeEnter: (to) => {
       if (to.path == "/") {
-        localStorage.getItem("locale") == "en"
-          ? router.push("/en")
-          : router.push("/ar");
+        localStorage.getItem("locale") == "en" ? router.push("/en") : router.push("/ar");
       }
     },
     children: [
@@ -22,6 +20,30 @@ const routes = [
           return import("../components/client/Home.vue");
         },
         children: [
+          {
+            path: "signup",
+            name: "auth.signup",
+            beforeEnter: () => {
+              if (localStorage.getItem("_token") != null) {
+                router.push("/en");
+              }
+            },
+            component: function () {
+              return import("../views/client/auth/SignupView.vue");
+            },
+          },
+          {
+            path: "signin",
+            name: "auth.signin",
+            beforeEnter: () => {
+              if (localStorage.getItem("_token") != null) {
+                router.push("/en");
+              }
+            },
+            component: function () {
+              return import("../views/client/auth/SignInView.vue");
+            },
+          },
           {
             path: "shop/:brand",
             name: "shopping",
@@ -35,6 +57,24 @@ const routes = [
             component: function () {
               return import("../views/client/ProductView.vue");
             },
+          },
+          {
+            path: "client",
+            name: "clientarea",
+            beforeEnter: () => {
+              if (localStorage.getItem("_token") == null) {
+                router.push("/en");
+              }
+            },
+            children: [
+              {
+                path: "home",
+                name: "clientarea.home",
+                component: function () {
+                  return import("../views/client/ClientAreaView.vue");
+                },
+              },
+            ],
           },
         ],
       },
@@ -125,8 +165,7 @@ const routes = [
       {
         path: "marketing&promotions",
         name: "Marketing&Promotions",
-        component: () =>
-          import("@/components/dashboard/Marketing&Promotions.vue"),
+        component: () => import("@/components/dashboard/Marketing&Promotions.vue"),
       },
       {
         path: "profile",

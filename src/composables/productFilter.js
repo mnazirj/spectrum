@@ -3,26 +3,20 @@ import { computed } from "vue";
 export default function productFilters(products, filters) {
   return computed(() => {
     let result = [...products.value];
-
+    console.log(result);
     // Filter by company
     if (filters.value.brands?.length) {
-      result = result.filter((p) => filters.value.brands.includes(p.company));
+      result = result.filter((p) => filters.value.brands.includes(p.brand.title));
     }
 
     // Filter by gender
     if (filters.value.genders?.length) {
-      result = result.filter((p) =>
-        p.gender.some((gen) => filters.value.genders.includes(gen))
-      );
+      result = result.filter((p) => filters.value.genders.includes(p.gender));
     }
 
     // Filter by price range
     if (filters.value.priceRange) {
-      result = result.filter(
-        (p) =>
-          p.price >= filters.value.priceRange[0] &&
-          p.price <= filters.value.priceRange[1]
-      );
+      result = result.filter((p) => p.price >= filters.value.priceRange[0] && p.price <= filters.value.priceRange[1]);
     }
 
     // Filter by rating (stars)
@@ -32,9 +26,7 @@ export default function productFilters(products, filters) {
 
     // Filter by size
     if (filters.value.sizes?.length) {
-      result = result.filter((p) =>
-        p.sizes.some((size) => filters.value.sizes.includes(size))
-      );
+      result = result.filter((p) => p.propreties?.some((size) => filters.value.sizes.includes(size.value)));
     }
     return result;
   });

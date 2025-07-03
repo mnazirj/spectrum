@@ -30,47 +30,66 @@
 .bg-zinc {
     background-color: var(--p-zinc-900) !important;
 }
-:root{
+
+:root {
     --primary-color-500: var(--p-zinc-900);
-  --primary-text-color-500: #ffffff;
+    --primary-text-color-500: #ffffff;
     --primary-color-600: var(--p-zinc-700);
-  --primary-text-color-600: #d0d0d0;
-  
+    --primary-text-color-600: #d0d0d0;
+
 }
 
 .logo-text {
     letter-spacing: 10px;
 }
 
+.p-inputnumber-input,
+.p-password-input {
+    border-radius: 0 !important;
+}
+
+.p-password-input {
+    width: 100% !important;
+}
+
 /* Dashboard Section */
-.bg-main{
-    
+.bg-main {
+
     background: var(--primary-color-500) !important;
 }
-.bg-main-700{
-background: var(--primary-color-600) !important;
+
+.bg-main-700 {
+    background: var(--primary-color-600) !important;
 }
-.text-main{
+
+.text-main {
     color: var(--primary-text-color-500) !important;
 }
-.width-10{
+
+.width-10 {
     width: 10%;
 }
-.width-20{
+
+.width-20 {
     width: 20%;
 }
-.width-60{
+
+.width-60 {
     width: 60%;
 }
-.width-80{
+
+.width-80 {
     width: 80%;
 }
-.width-70{
+
+.width-70 {
     width: 70%;
 }
-.width-90{
+
+.width-90 {
     width: 90%;
 }
+
 .navbar .megamenu {
     padding: 1rem;
 }
