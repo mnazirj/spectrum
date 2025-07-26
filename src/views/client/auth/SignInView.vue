@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="d-flex justify-content-center">
-      <div class="col-6">
+      <div class="col-lg-6 col-md-6 col-12">
         <Form v-slot="$form" :resolver="resolver" @submit="onFormSubmit" class="w-100">
           <div class="d-flex flex-column gap-4">
             <div>
@@ -23,6 +23,10 @@
             <Message v-if="hasError" severity="error" size="small" variant="simple">Email or password is incorrect!</Message>
           </div>
         </Form>
+        <div class="mt-2">
+          No acconut yet?
+          <a href="/signup" class="text-dark font-avg">Create one</a>
+        </div>
       </div>
     </div>
   </div>
@@ -66,7 +70,6 @@ const resolver = ({ values }) => {
 
 const onFormSubmit = ({ valid }) => {
   if (valid) {
-    console.log(valid);
     signin();
   }
 };
@@ -80,7 +83,7 @@ function signin() {
         console.log(res.data);
         localStorage.setItem("_token", res.data.access);
         setTimeout(() => {
-          router.go("/en");
+          router.go("/home");
           isLoading.value = false;
         }, 1000);
       } else {

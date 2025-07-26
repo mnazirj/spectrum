@@ -3,185 +3,62 @@
     <div id="sidebar-nav" class="h-100">
       <div class="d-flex flex-column p-2 h-100 bg-main text-white">
         <div id="header" class="ps-2 d-flex flex-wrap align-items-center">
-          <span class="fs-2 w-75 ps-1" :style="{ fontFamily: 'Rokkitt' }"
-            >MENU</span
-          >
+          <span class="fs-2 w-75 ps-1" :style="{ fontFamily: 'Rokkitt' }">{{ $t("dash.menu") }}</span>
           <div class="w-25 d-flex justify-content-end">
-            <i
-              class="pi pi-angle-double-left cursor-pointer"
-              data-bs-toggle="collapse"
-              data-bs-target="#sidebar"
-              @click="emits('handelSideToggleShow')"
-            />
+            <i class="pi pi-angle-double-left cursor-pointer" data-bs-toggle="collapse" data-bs-target="#sidebar" @click="emits('handelSideToggleShow')" />
           </div>
         </div>
-        <div
-          id="body"
-          class="d-flex justify-content-center align-items-center mt-3 p-1 ps-2"
-        >
+        <div id="body" class="d-flex justify-content-center align-items-center mt-3 p-1 ps-2">
           <ul class="list-group m-2 w-100 text-nowrap">
-            <router-link
-              :class="[
-                'list-group-item prim-list-item bg-main text-white border-0 p-1 my-2 rounded-2',
-                isActive('Overview') ? 'active' : '',
-              ]"
-              :to="{ name: 'Overview' }"
-            >
+            <router-link :class="['list-group-item prim-list-item bg-main text-white border-0 p-1 my-2 rounded-2', isActive('Overview') ? 'active' : '']" :to="{ name: 'Overview' }">
               <i class="pi pi-objects-column mx-1" />
-              <span class="mx-1">Overview</span>
+              <span class="mx-1">{{ $t("dash.sidebar.overview") }}</span>
             </router-link>
-            <li
-              class="list-group-item bg-main text-white border-0 p-0 rounded-2 my-2"
-              id="list1"
-            >
-              <div
-                class="w-100 d-flex prim-list-item cursor-pointer justify-content-between p-1 rounded-2 align-items-center"
-                data-bs-target="#second-list1"
-                data-bs-toggle="collapse"
-                @click="changeIcon('list1Icon', 'list1')"
-              >
+            <li class="list-group-item bg-main text-white border-0 p-0 rounded-2 my-2" id="list1">
+              <div class="w-100 d-flex prim-list-item cursor-pointer justify-content-between p-1 rounded-2 align-items-center" data-bs-target="#second-list1" data-bs-toggle="collapse" @click="changeIcon('list1Icon', 'list1')">
                 <div>
                   <i class="pi pi-shop mx-1" />
-                  <span class="mx-1">Invontry Mangment</span>
+                  <span class="mx-1">{{ $t("dash.sidebar.inv") }}</span>
                 </div>
                 <i id="list1Icon" class="pi pi-chevron-right text-end" />
               </div>
 
-              <ul
-                id="second-list1"
-                class="list-group m-2 ms-3 width-90 collapse"
-              >
-                <router-link
-                  :class="[
-                    'list-group-item prim-list-item bg-main text-white border-0 p-1  my-2 rounded-2',
-                    isActive('Storage') ? 'active' : '',
-                  ]"
-                  :to="{ name: 'Storage' }"
-                >
+              <ul id="second-list1" class="list-group m-2 ms-3 width-90 collapse">
+                <router-link :class="['list-group-item prim-list-item bg-main text-white border-0 p-1  my-2 rounded-2', isActive('Storage') ? 'active' : '']" :to="{ name: 'Storage' }">
                   <i class="pi pi-warehouse mx-1" />
-                  <span class="mx-1">Storage</span>
+                  <span class="mx-1">{{ $t("dash.sidebar.storage") }}</span>
                 </router-link>
-                <router-link
-                  :class="[
-                    'list-group-item prim-list-item bg-main text-white border-0 p-1  my-2 rounded-2',
-                    isActive('Category') ? 'active' : '',
-                  ]"
-                  :to="{ name: 'Category' }"
-                >
+                <router-link :class="['list-group-item prim-list-item bg-main text-white border-0 p-1  my-2 rounded-2', isActive('Category') ? 'active' : '']" :to="{ name: 'Category' }">
                   <i class="pi pi-filter-fill mx-1" />
-                  <span class="mx-1">Categories</span>
+                  <span class="mx-1">{{ $t("dash.sidebar.cate") }}</span>
                 </router-link>
-                <router-link
-                  :class="[
-                    'list-group-item prim-list-item bg-main text-white border-0 p-1  my-2 rounded-2',
-                    isActive('Subcategory') ? 'active' : '',
-                  ]"
-                  :to="{ name: 'Subcategory' }"
-                >
+                <router-link :class="['list-group-item prim-list-item bg-main text-white border-0 p-1  my-2 rounded-2', isActive('Subcategory') ? 'active' : '']" :to="{ name: 'Subcategory' }">
                   <i class="pi pi-filter-fill mx-1" />
-                  <span class="mx-1">Sub-Categories</span>
+                  <span class="mx-1">{{ $t("dash.sidebar.sub") }}</span>
                 </router-link>
-                <router-link
-                  :class="[
-                    'list-group-item prim-list-item bg-main text-white border-0 p-1  my-2 rounded-2',
-                    isActive('Item') ? 'active' : '',
-                  ]"
-                  :to="{ name: 'Item' }"
-                >
+                <router-link :class="['list-group-item prim-list-item bg-main text-white border-0 p-1  my-2 rounded-2', isActive('Item') ? 'active' : '']" :to="{ name: 'Item' }">
                   <i class="pi pi-filter-fill mx-1" />
-                  <span class="mx-1">Items</span>
+                  <span class="mx-1">{{ $t("dash.sidebar.items") }}</span>
                 </router-link>
-                <router-link
-                  :class="[
-                    'list-group-item prim-list-item bg-main text-white border-0 p-1  my-2 rounded-2',
-                    isActive('Brand') ? 'active' : '',
-                  ]"
-                  :to="{ name: 'Brand' }"
-                >
+                <router-link :class="['list-group-item prim-list-item bg-main text-white border-0 p-1  my-2 rounded-2', isActive('Brand') ? 'active' : '']" :to="{ name: 'Brand' }">
                   <i class="pi pi-building mx-1" />
-                  <span class="mx-1">Brands</span>
+                  <span class="mx-1">{{ $t("dash.sidebar.brand") }}</span>
                 </router-link>
               </ul>
             </li>
-            <router-link
-              :class="[
-                'list-group-item prim-list-item bg-main text-white border-0 p-1 my-2 rounded-2',
-                isActive('Order') ? 'active' : '',
-              ]"
-              :to="{ name: 'Order' }"
-            >
+            <router-link :class="['list-group-item prim-list-item bg-main text-white border-0 p-1 my-2 rounded-2', isActive('Order') ? 'active' : '']" :to="{ name: 'Order' }">
               <i class="pi pi-shopping-cart mx-1" />
-              <span class="mx-1">Order Mangment</span>
+              <span class="mx-1">{{ $t("dash.sidebar.order") }}</span>
             </router-link>
-            <router-link
-              :class="[
-                'list-group-item prim-list-item bg-main text-white border-0 p-1 my-2 rounded-2',
-                isActive('Customer') ? 'active' : '',
-              ]"
-              :to="{ name: 'Customer' }"
-            >
+            <!-- <router-link :class="['list-group-item prim-list-item bg-main text-white border-0 p-1 my-2 rounded-2', isActive('Customer') ? 'active' : '']" :to="{ name: 'Customer' }">
               <i class="pi pi-users mx-1" />
               <span class="mx-1">Customer Mangment</span>
-            </router-link>
-            <router-link
-              :class="[
-                'list-group-item prim-list-item bg-main text-white border-0 p-1 my-2 rounded-2',
-                isActive('Sales') ? 'active' : '',
-              ]"
-              :to="{ name: 'Sales' }"
-            >
-              <i class="pi pi-chart-line mx-1" />
-              <span class="mx-1">Sales Analytics</span>
-            </router-link>
-            <router-link
-              :class="[
-                'list-group-item prim-list-item bg-main text-white border-0 p-1 my-2 rounded-2',
-                isActive('Payment') ? 'active' : '',
-              ]"
-              :to="{ name: 'Payment' }"
-            >
-              <i class="pi pi-wallet mx-1" />
-              <span class="mx-1">Payment Analytics</span>
-            </router-link>
-            <router-link
-              :class="[
-                'list-group-item prim-list-item bg-main text-white border-0 p-1 my-2 rounded-2',
-                isActive('Website') ? 'active' : '',
-              ]"
-              :to="{ name: 'Website' }"
-            >
-              <i class="fa-solid fa-pager mx-1" />
-              <span class="mx-1">Website Analytics</span>
-            </router-link>
-            <router-link
-              :class="[
-                'list-group-item prim-list-item bg-main text-white border-0 p-1 my-2 rounded-2',
-                isActive('Performance') ? 'active' : '',
-              ]"
-              :to="{ name: 'Performance' }"
-            >
-              <i class="pi pi-gauge mx-1" />
-              <span class="mx-1">Performance Indictors</span>
-            </router-link>
-            <router-link
-              :class="[
-                'list-group-item prim-list-item bg-main text-white border-0 p-1 my-2 rounded-2',
-                isActive('Marketing&Promotions') ? 'active' : '',
-              ]"
-              :to="{ name: 'Marketing&Promotions' }"
-            >
-              <i class="pi pi-money-bill mx-1" />
-              <span class="mx-1">Marketing & Promotions</span>
-            </router-link>
-            <!-- <router-link
-              :class="[
-                'list-group-item prim-list-item bg-main text-white border-0 p-1 my-2 rounded-2',
-                isActive('') ? 'active' : '',
-              ]"
-            >
-              <i class="pi pi-exclamation-triangle mx-1" />
-              <span class="mx-1">Custome Reports</span>
             </router-link> -->
+
+            <router-link :class="['list-group-item prim-list-item bg-main text-white border-0 p-1 my-2 rounded-2', isActive('Marketing&Promotions') ? 'active' : '']" :to="{ name: 'Marketing&Promotions' }">
+              <i class="pi pi-money-bill mx-1" />
+              <span class="mx-1">{{ $t("dash.sidebar.promo") }}</span>
+            </router-link>
           </ul>
         </div>
       </div>
@@ -208,9 +85,7 @@ function changeIcon(iconId) {
   if (document.getElementById(iconId).classList.contains("pi-chevron-right")) {
     document.getElementById(iconId).classList.remove("pi-chevron-right");
     document.getElementById(iconId).classList.add("pi-chevron-down");
-  } else if (
-    document.getElementById(iconId).classList.contains("pi-chevron-down")
-  ) {
+  } else if (document.getElementById(iconId).classList.contains("pi-chevron-down")) {
     document.getElementById(iconId).classList.remove("pi-chevron-down");
     document.getElementById(iconId).classList.add("pi-chevron-right");
   }
@@ -226,19 +101,8 @@ function isActive(routeName) {
   min-height: calc(100vh - 9.5rem);
   width: 15rem;
   transition: width 0.3s ease;
-  /* color:inherit */
 }
-/* ::v-deep .ah:hover {
-  background: #fff !important;
-  color: #1d3223 !important;
-}
-::v-deep .text-inherit {
-  color: inherit !important;
-}
-::v-deep .ac:hover {
-  background: #fff !important;
-  color: #1d3223 !important;
-} */
+
 .prim-list-item:hover {
   color: var(--primary-color-500) !important;
   background: var(--primary-text-color-600) !important;

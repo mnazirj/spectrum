@@ -1,38 +1,18 @@
 <template>
   <section id="ads">
     <div class="container">
-      <Carousel
-        v-if="hasBanner"
-        :value="bannerItems"
-        circular
-        :numScroll="1"
-        :showIndicators="false"
-        :showNavigators="false"
-        :autoplayInterval="3000"
-      >
+      <Carousel v-if="hasBanner" :value="bannerItems" circular :numScroll="1" :showIndicators="false" :showNavigators="false" :autoplayInterval="3000">
         <template #item="slotProps">
           <div class="card border-0">
             <div class="card-body">
               <div class="row">
                 <div class="col-lg-6 col-md-6 col-12">
-                  <img
-                    :src="slotProps.data.img"
-                    width="650"
-                    height="512"
-                    class="img-fluid d-lg-none d-md-none"
-                  />
-                  <img
-                    :src="slotProps.data.img"
-                    width="650"
-                    height="512"
-                    class="d-lg-block d-md-block d-none"
-                  />
+                  <img :src="slotProps.data.img" width="650" height="512" class="img-fluid d-lg-none d-md-none" />
+                  <img :src="slotProps.data.img" width="650" height="512" class="d-lg-block d-md-block d-none" />
                 </div>
                 <div class="col-lg-6 col-md-6 col-12">
-                  <div
-                    class="d-flex justify-content-center align-items-center bg-body-secondary h-100"
-                  >
-                    <div class="ms-lg-auto ms-md-auto ms-5 py-5">
+                  <div class="d-flex justify-content-center align-items-center bg-body-secondary h-100">
+                    <div class="ms-lg-auto ms-md-auto py-5" :class="{ 'me-lg-auto me-md-auto': $i18n.locale == 'ar' }">
                       <h1 class="w-75 font-avg">{{ slotProps.data.title }}</h1>
                       <h6 class="w-75">{{ slotProps.data.subtitle }}</h6>
                       <div class="mt-5">
@@ -47,24 +27,12 @@
         </template>
       </Carousel>
 
-      <Carousel
-        v-if="hasSlider"
-        :value="sliderItems"
-        circular
-        :numVisible="3"
-        :showIndicators="false"
-        :responsiveOptions="responsiveOptions"
-      >
+      <Carousel v-if="hasSlider" :value="sliderItems" circular :numVisible="3" :showIndicators="false" :responsiveOptions="responsiveOptions">
         <template #item="slotProps">
           <div class="col h-100">
             <div class="card text-white h-100">
               <div class="card-img-top">
-                <img
-                  :src="slotProps.data.img"
-                  width="424"
-                  height="344"
-                  class="img-fluid"
-                />
+                <img :src="slotProps.data.img" width="424" height="344" class="img-fluid" />
               </div>
               <div class="card-body bg-zinc">
                 <div>

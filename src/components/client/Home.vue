@@ -1,18 +1,12 @@
 <template>
   <router-view />
-
-  <div v-if="$route.path == '/en' || $route.path == '/ar'">
+  <div v-if="$route.path == '/home'">
     <Ads :bannerItems="bannerProduct" :sliderItems="sliderProduct" />
-    <ProductCard title="New. Need. Now" :products="Products" class="py-5" />
-    <Banner
-      :isReversed="false"
-      title="Unbeatable Value Sets!"
-      subtitle="Explore exclusive sets you won't find anywhere else!"
-      src="https://picsum.photos/id/35/1024/1024"
-    />
-    <ProductCard title="Bestsellers" :products="Products" class="py-5" />
+    <ProductCard :title="$t('client.new')" :products="newProduct" class="py-5" v-if="newProduct.length > 0" />
+    <Banner :isReversed="isEnglish" title="Unbeatable Value Sets!" subtitle="Explore exclusive sets you won't find anywhere else!" src="https://picsum.photos/id/35/1024/1024" />
+    <ProductCard :title="$t('client.best')" :products="bestSeller" class="py-5" />
     <Ads :hasBanner="false" :sliderItems="sliderProduct" />
-    <Brands class="py-5" />
+    <Brands class="py-5" :brands="brands" />
   </div>
 </template>
 
@@ -22,51 +16,13 @@ import ProductCard from "@/components/client/ProductCard.vue";
 import Banner from "@/components/client/BannerNew.vue";
 import Brands from "@/components/client/Brands.vue";
 import Button from "primevue/button";
-import { ref } from "vue";
-
-const Products = ref([
-  {
-    company: "Kayali",
-    name: "Fleu Majesty Rose Royale | 31",
-    stars: 4,
-    rate: 200,
-    sizes: [50, 500, 1000],
-    price: 125.0,
-    image: "https://picsum.photos/id/80/1024/1024",
-    tags: ["Exclusive", "New"],
-  },
-  {
-    company: "Milk Makeup",
-    name: "Hydro Grip Gel Tint – 12-Hour Hydrating Gel Skin Tint",
-    stars: 4,
-    rate: 1024,
-    sizes: [500, 1000],
-    price: 125.0,
-    image: "https://picsum.photos/id/70/1024/1024",
-    tags: ["New"],
-  },
-  {
-    company: "LANCÔME",
-    name: "Rénergie H.C.F. Triple Serum Eye Set",
-    stars: 4,
-    rate: 50,
-    sizes: [500, 1000],
-    price: 125.0,
-    image: "https://picsum.photos/id/60/1024/1024",
-    tags: ["Exclusive", "New"],
-  },
-  {
-    company: "LANCÔME",
-    name: "Rénergie H.C.F. Triple Serum Eye Set",
-    stars: 4,
-    rate: 500,
-    sizes: [500, 1000],
-    price: 125.0,
-    image: "https://picsum.photos/id/50/1024/1024",
-    tags: ["Exclusive", "New"],
-  },
-]);
-
+import { onMounted, ref, watch } from "vue";
+import axios from "axios";
+import { useI18n } from "vue-i18n";
+const { locale } = useI18n();
+const newProduct = ref([]);
+const bestSeller = ref([]);
+const brands = ref([]);
 const bannerProduct = ref([
   {
     title: "New Supershine Lip Gloss",
@@ -80,6 +36,14 @@ const bannerProduct = ref([
   },
 ]);
 
+const isEnglish = ref(true);
+watch(locale, (newLocale) => {
+  if (newLocale == "en") {
+    isEnglish.value = true;
+  } else {
+    isEnglish.value = false;
+  }
+});
 const sliderProduct = ref([
   {
     title: "New Supershine Lip Gloss",
@@ -112,4 +76,18 @@ const sliderProduct = ref([
     img: "https://picsum.photos/id/75/1024/1024",
   },
 ]);
+
+function fetchNewProduct() {
+  axios.get("homepage/getNewProduct").then((res) => {
+    if (res.status == 200) {
+      newProduct.value = res.data.new;
+      bestSeller.value = res.data.top;
+      brands.value = res.data.brands;
+    }
+  });
+}
+
+onMounted(() => {
+  fetchNewProduct();
+});
 </script>

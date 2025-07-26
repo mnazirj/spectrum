@@ -16,10 +16,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-
     /* outline: 1px solid red; */
-
-
 }
 
 
@@ -51,6 +48,49 @@
 .p-password-input {
     width: 100% !important;
 }
+
+
+.navbar .megamenu {
+    padding: 1rem;
+}
+
+.menu-link {
+    color: black;
+    font-weight: 400;
+    text-decoration: none;
+    font-family: 'AVG';
+}
+
+.menu-link:hover {
+    font-weight: 700;
+}
+
+.dropdown>a {
+    font-family: 'AVGBLOD';
+
+}
+
+.product-name {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
+.product-desc {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.social>a {
+    color: white;
+    font-size: 20px;
+}
+
 
 /* Dashboard Section */
 .bg-main {
@@ -88,42 +128,4 @@
 
 .width-90 {
     width: 90%;
-}
-
-.navbar .megamenu {
-    padding: 1rem;
-}
-
-.menu-link {
-    color: black;
-    font-weight: 100;
-    text-decoration: none;
-    font-family: 'AVG';
-
-}
-
-.dropdown>a {
-    font-family: 'AVGBLOD';
-
-}
-
-.product-name {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    line-clamp: 1;
-    -webkit-box-orient: vertical;
-}
-
-.product-desc {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-}
-
-.social>a {
-    color: white;
-    font-size: 20px;
 }

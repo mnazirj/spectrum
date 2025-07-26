@@ -1,96 +1,43 @@
 <template>
-  <div class="">
-    <div
-      id="header"
-      class="d-flex justify-content-between flex-wrap m-2 my-3 w-100"
-    >
+  <div>
+    <!-- <div id="header" class="d-flex justify-content-between flex-wrap m-2 my-3 w-100">
       <div id="search-container" class="d-flex justify-content-end w-75">
         <div class="d-flex justify-content-center w-75">
           <IconField class="w-100">
             <InputIcon class="pi pi-search text-main-color" />
-            <InputText
-              v-model="searchValue"
-              placeholder="Search"
-              class="w-75"
-            />
+            <InputText v-model="searchValue" placeholder="Search" class="w-75" />
           </IconField>
         </div>
       </div>
-      <div
-        id="btn-create-container"
-        class="d-flex justify-content-end w-25 px-3"
-      ></div>
-    </div>
+      <div id="btn-create-container" class="d-flex justify-content-end w-25 px-3"></div>
+    </div> -->
     <div id="body" class="d-flex w-100 justify-content-center">
-      <DataTable
-        :value="orders"
-        v-model:filters="filters"
-        paginator
-        :rows="5"
-        :rowsPerPageOptions="[5, 10, 20, 50]"
-        removableSort
-        dataKey="id"
-        filterDisplay="row"
-        :class="['custom-datatable', isEng ? 'ltr' : 'rtl']"
-        :style="{ width: '95%' }"
-      >
+      <DataTable :value="orderList" v-model:filters="filters" paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]" removableSort dataKey="id" filterDisplay="row" :class="['custom-datatable', isEng ? 'ltr' : 'rtl']" :style="{ width: '95%' }">
         <Column header="Id" class="width-10">
           <template #body="slotProps">
-            <span>#{{ slotProps.data.id }}</span>
+            <span>#{{ slotProps.index + 1 }}</span>
           </template>
         </Column>
         <Column header="Customer">
           <template #body="slotProps">
             <div class="">
-              <span>{{ slotProps.data.customer.name }}</span>
+              <span>{{ slotProps.data.first_name }} {{ slotProps.data.last_name }}</span>
             </div>
           </template>
         </Column>
-        <Column
-          header="Status"
-          :showFilterMenu="false"
-          :filter="true"
-          filterField="status"
-          style="min-width: 12rem"
-        >
+        <Column header="Status" :showFilterMenu="false" :filter="true" filterField="status" style="min-width: 12rem">
           <template #body="{ data }">
             <span>{{ data.status }}</span>
           </template>
           <template #filter="{ filterModel, filterCallback }">
-            <Select
-              v-model="filterModel.value"
-              @change="filterCallback()"
-              :options="statuses"
-              placeholder="Select One"
-              style="min-width: 12rem"
-              :showClear="true"
-            >
-            </Select>
+            <Select v-model="filterModel.value" @change="filterCallback()" :options="statuses" placeholder="Select One" style="min-width: 12rem" :showClear="true"> </Select>
           </template>
         </Column>
         <Column header="Actions" class="width-20">
           <template #body="slotProps">
             <div class="d-flex">
-              <Button
-                icon="pi pi-eye"
-                variant="text"
-                class="mx-1"
-                @click="openShowDialog(slotProps.data)"
-              ></Button>
-              <Button
-                icon="pi pi-pen-to-square"
-                severity="info"
-                variant="text"
-                class="mx-1"
-                @click="openEditDialog(slotProps.data)"
-              ></Button>
-              <Button
-                icon="pi pi-trash"
-                severity="danger"
-                variant="text"
-                class="mx-1"
-                @click="openDeleteDialog(slotProps.data)"
-              ></Button>
+              <Button icon="pi pi-pen-to-square" severity="info" variant="text" class="mx-1" @click="openEditDialog(slotProps.data)"></Button>
+              <Button icon="pi pi-trash" severity="danger" variant="text" class="mx-1" @click="openDeleteDialog(slotProps.data)"></Button>
             </div>
           </template>
         </Column>
@@ -98,90 +45,45 @@
     </div>
   </div>
   <!-- Edit Dialog -->
-  <Dialog
-    v-model:visible="editDialog"
-    :modal="true"
-    :closable="true"
-    :header="'edit #' + currentData.id + ' order'"
-    :breakpoints="{ '1199px': '85vw', '575px': '95vw' }"
-    :dir="isEng ? 'ltr' : 'rtl'"
-  >
-    <div
-      class="w-100 d-flex justify-content-center align-items-center flex-wrap"
-    >
+  <Dialog v-model:visible="editDialog" :modal="true" :closable="true" :header="$t('dash.edit')" :breakpoints="{ '1199px': '85vw', '575px': '95vw' }" :dir="isEng ? 'ltr' : 'rtl'" dismissableMask>
+    <div class="w-100 d-flex justify-content-center align-items-center flex-wrap">
       <div class="w-100 d-flex mt-2 mb-3">
         <div class="d-flex align-items-center">
-          <span>Status</span>
+          <span>{{ $t("client.area.status") }}</span>
         </div>
-        <Select
-          v-model="tempOrder.status"
-          :options="statuses"
-          class="mx-3"
-          fluid
-        />
+        <Select v-model="tempOrder.status" :options="statuses" class="mx-3" fluid />
       </div>
       <div class="section w-100 d-flex align-items-center flex-wrap m-3">
-        <div class="mt-2 mb-3">
+        <div class="mt-2 mb-3 w-100">
           <FloatLabel variant="on">
             <IconField class="w-100">
               <InputIcon class="pi pi-dollar text-main" />
-              <InputNumber
-                id="total-price"
-                v-model="tempOrder.totalPrice"
-                :defaultValue="currentData.totalPrice"
-                fluid
-                mode="currency"
-                currency="USD"
-                locale="en-US"
-              />
+              <InputNumber id="total-price" v-model="tempOrder.total" :defaultValue="currentData.totalPrice" fluid mode="currency" currency="LYD" locale="en-US" readonly />
             </IconField>
-            <label for="total-price">Total price</label>
-          </FloatLabel>
-        </div>
-        <div class="mt-2 mb-3">
-          <FloatLabel variant="on">
-            <IconField class="w-100">
-              <InputIcon class="pi pi-percentage text-main" />
-              <InputNumber
-                id="discount"
-                v-model="tempOrder.discount"
-                :defaultValue="currentData.discount"
-                fluid
-                mode="currency"
-                currency="USD"
-                locale="en-US"
-              />
-            </IconField>
-            <label for="descount">Discount</label>
+            <label for="total-price">{{ $t("client.checkout.total") }}</label>
           </FloatLabel>
         </div>
       </div>
       <Divider />
       <div class="w-100 mt-2 mb-3 px-1">
-        <div v-if="currentData.products.length > 0">
-          <DataTable :value="currentData.products" class="w-100">
-            <Column header="id">
+        <div v-if="currentData.product.length > 0">
+          <DataTable :value="currentData.product" class="w-100">
+            <Column header="#">
               <template #body="slotProps">
-                <span>#{{ slotProps.data.product.id }}</span>
+                <span>#{{ slotProps.index + 1 }}</span>
               </template>
             </Column>
-            <Column header="Name">
+            <Column :header="$t('client.area.name')">
               <template #body="slotProps">
-                <span v-if="1 === 1">{{ slotProps.data.product.enName }}</span>
-                <span v-else>{{ slotProps.data.product.arName }}</span>
+                <span v-if="1 === 1">{{ slotProps.data.name }}</span>
+                <span v-else>{{ slotProps.data.arName }}</span>
               </template>
             </Column>
-            <Column header="Quantity">
-              <template #body="slotProps">
+
+            <Column :header="$t('client.checkout.qty')" field="qty">
+              <!-- <template #body="slotProps">
                 <div class="w-50">
-                  <InputNumber
-                    v-model="tempOrder.products[slotProps.index].quantity"
-                    showButtons
-                    buttonLayout="horizontal"
-                    :step="1"
-                    :min="0"
-                    fluid
-                  >
+                  <InputNumber v-model="tempOrder.product[slotProps.index].qty" showButtons buttonLayout="horizontal" :step="1" :min="0" fluid>
                     <template #incrementbuttonicon>
                       <span class="pi pi-plus" />
                     </template>
@@ -190,65 +92,30 @@
                     </template>
                   </InputNumber>
                 </div>
-              </template>
+              </template> -->
             </Column>
-            <Column header="">
+            <!-- <Column>
               <template #body="slotProps">
-                <Button
-                  icon="pi pi-trash"
-                  severity="danger"
-                  variant="text"
-                  class="mx-1"
-                  @click="deleteProduct(slotProps.index)"
-                ></Button>
+                <Button icon="pi pi-trash" severity="danger" variant="text" class="mx-1" @click="deleteProduct(slotProps.index)"></Button>
               </template>
-            </Column>
+            </Column> -->
           </DataTable>
         </div>
-        <div
-          v-else
-          class="text-capitalize text-danger font-italic fs-4 d-flex justify-content-center"
-        >
-          no product
-        </div>
+        <div v-else class="text-capitalize text-danger font-italic fs-4 d-flex justify-content-center">no product</div>
       </div>
     </div>
     <template #footer>
       <div class="d-flex m-1 mt-3">
-        <Button
-          label="Update"
-          icon="pi pi-file-arrow-up"
-          severity="info"
-          @click="updateOrder"
-        ></Button>
+        <Button label="Update" icon="pi pi-file-arrow-up" severity="info" @click="updateOrder"></Button>
       </div>
     </template>
   </Dialog>
   <!-- Delete Dialog -->
-  <Dialog
-    v-model:visible="deleteDialog"
-    :modal="true"
-    :closable="true"
-    :header="'Delete #' + currentData.id + ' order'"
-    :style="{ width: '35rem' }"
-    :breakpoints="{ '1199px': '85vw', '575px': '95vw' }"
-    :dir="isEng ? 'ltr' : 'rtl'"
-  >
-    <span v-if="1 == 1">
-      Are you sure you want to delete {{ currentData.customer.name }}'s order
-      ?</span
-    >
-    <span v-else>
-      Are you sure you want to delete {{ currentData.customer.name }}'s order
-      ?</span
-    >
+  <Dialog v-model:visible="deleteDialog" :modal="true" :closable="true" :header="$t('dash.delete')" :style="{ width: '35rem' }" :breakpoints="{ '1199px': '85vw', '575px': '95vw' }" :dir="isEng ? 'ltr' : 'rtl'" dismissableMask>
+    <span v-if="1 == 1"> {{ $t("dash.delete_question1") }} {{ currentData.first_name }} {{ $t("dash.order") }} ?</span>
+    <span v-else>{{ $t("dash.delete_question1") }} {{ currentData.first_name }} {{ $t("dash.order") }}?</span>
     <template #footer>
-      <Button
-        icon="pi pi-trash"
-        label="Delete"
-        severity="danger"
-        @click="deleteOrder"
-      ></Button>
+      <Button icon="pi pi-trash" :label="$t('dash.delete')" severity="danger" @click="deleteOrder"></Button>
     </template>
   </Dialog>
 </template>
@@ -268,7 +135,8 @@ import Divider from "primevue/divider";
 
 import { FilterMatchMode } from "@primevue/core/api";
 
-import { ref, computed, onBeforeMount } from "vue";
+import { ref, computed, onBeforeMount, onMounted } from "vue";
+import axios from "axios";
 
 // Hooks
 onBeforeMount(() => {
@@ -280,7 +148,7 @@ onBeforeMount(() => {
 // Data
 const isEng = ref(false);
 const searchValue = ref(null);
-const statuses = ref(["Delivered", "Completed", "Returned"]);
+const statuses = ref(["shipped", "pending", "refunded"]);
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   status: { value: null, matchMode: FilterMatchMode.EQUALS },
@@ -305,6 +173,7 @@ const currentData = ref({
   totalPrice: 0,
   status: null,
 });
+const orderList = ref([]);
 const editDialog = ref(false);
 const deleteDialog = ref(false);
 
@@ -1083,16 +952,56 @@ function openDeleteDialog(data) {
   deleteDialog.value = true;
 }
 function updateOrder() {
-  console.log("Updated!!", currentData.value);
-  editDialog.value = false;
+  axios
+    .put("control/modify/order/" + currentData.value.id, currentData.value, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("_token")}`,
+      },
+    })
+    .then((res) => {
+      if (res.status == 200) {
+        editDialog.value = false;
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+      }
+    });
 }
 function deleteOrder() {
-  console.log("Deleted!!!", currentData.value);
-  deleteDialog.value = false;
+  axios
+    .delete("control/delete/order/" + currentData.value.id, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("_token")}`,
+      },
+    })
+    .then((res) => {
+      if (res.status == 200) {
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+      }
+    });
 }
 function deleteProduct(index) {
   currentData.value.products.pop(index);
 }
+
+function fetchOrders() {
+  axios
+    .get("control/list/order", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("_token")}`,
+      },
+    })
+    .then((res) => {
+      if (res.status == 200) {
+        orderList.value = res.data;
+      }
+    });
+}
+onMounted(() => {
+  fetchOrders();
+});
 </script>
 
 <style scoped>

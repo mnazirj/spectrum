@@ -1,45 +1,21 @@
 <template>
-  <div class="">
-    <div
-      id="header"
-      class="d-flex justify-content-between flex-wrap m-2 my-3 w-100"
-    >
+  {{ newProduct.image }}
+  <div>
+    <div id="header" class="d-flex justify-content-between flex-wrap m-2 my-3 w-100">
       <div id="search-container" class="d-flex justify-content-end w-75">
         <div class="d-flex justify-content-center w-75">
           <IconField class="w-100">
             <InputIcon class="pi pi-search text-main-color" />
-            <InputText
-              v-model="searchValue"
-              :placeholder="$t('dash.search')"
-              class="w-75"
-            />
+            <InputText v-model="searchValue" :placeholder="$t('dash.search')" class="w-75" />
           </IconField>
         </div>
       </div>
-      <div
-        id="btn-create-container"
-        class="d-flex justify-content-end w-25 px-3"
-      >
-        <Button
-          :label="$t('dash.create')"
-          icon="pi pi-plus"
-          class="custom-button"
-          style="min-width: 6rem"
-          @click="creatDialog = true"
-        />
+      <div id="btn-create-container" class="d-flex justify-content-end w-25 px-3">
+        <Button :label="$t('dash.create')" icon="pi pi-plus" class="custom-button" style="min-width: 6rem" @click="creatDialog = true" />
       </div>
     </div>
     <div id="body" class="d-flex justify-content-center">
-      <DataTable
-        :value="products"
-        paginator
-        :rows="5"
-        :rowsPerPageOptions="[5, 10, 20, 50]"
-        removableSort
-        :class="['custom-datatable text-nowrap', isEng ? 'ltr' : 'rtl']"
-        :style="{ width: '95%' }"
-        :loading="products == null"
-      >
+      <DataTable :value="products" paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]" removableSort :class="['custom-datatable text-nowrap', isEng ? 'ltr' : 'rtl']" :style="{ width: '95%' }" :loading="products == null">
         <Column :header="$t('dash.id')">
           <template #body="slotProps">
             <span>#{{ slotProps.data.id }}</span>
@@ -73,10 +49,7 @@
         </Column>
         <Column :header="$t('dash.storage.availability')">
           <template #body="slotProps">
-            <i
-              v-if="slotProps.data.availability"
-              class="pi pi-check-circle text-success"
-            />
+            <i v-if="slotProps.data.availability" class="pi pi-check-circle text-success" />
             <i v-else class="pi pi-ban text-danger" />
           </template>
         </Column>
@@ -84,30 +57,9 @@
         <Column :header="$t('dash.actions')">
           <template #body="slotProps">
             <div class="d-flex">
-              <Button
-                icon="pi pi-eye"
-                variant="text"
-                class="mx-1"
-                @click="
-                  router.push(
-                    `/${$i18n.locale}/shop/product/${slotProps.data.slug}`
-                  )
-                "
-              ></Button>
-              <Button
-                icon="pi pi-pen-to-square"
-                severity="info"
-                variant="text"
-                class="mx-1"
-                @click="openEditDialog(slotProps.data)"
-              ></Button>
-              <Button
-                icon="pi pi-trash"
-                severity="danger"
-                variant="text"
-                class="mx-1"
-                @click="openDeleteDialog(slotProps.data)"
-              ></Button>
+              <Button icon="pi pi-eye" variant="text" class="mx-1" @click="router.push(`/shop/product/${slotProps.data.slug}`)"></Button>
+              <Button icon="pi pi-pen-to-square" severity="info" variant="text" class="mx-1" @click="openEditDialog(slotProps.data)"></Button>
+              <Button icon="pi pi-trash" severity="danger" variant="text" class="mx-1" @click="openDeleteDialog(slotProps.data)"></Button>
             </div>
           </template>
         </Column>
@@ -116,499 +68,184 @@
   </div>
 
   <!-- Create Dialog -->
-  <Dialog
-    v-model:visible="creatDialog"
-    modal
-    :header="$t('dash.storage.create_a_product')"
-    :style="{ width: '60rem' }"
-    :dir="isEng ? 'ltr' : 'rtl'"
-  >
-    <Form
-      v-slot="$form"
-      :resolver="createResolver"
-      @submit="onFormSubmitCreate"
-    >
-      <div
-        class="d-flex justify-content-center align-items-center flex-wrap w-100 p-2 px-4"
-      >
+  <Dialog v-model:visible="creatDialog" modal :header="$t('dash.storage.create_a_product')" :style="{ width: '60rem' }" :dir="isEng ? 'ltr' : 'rtl'" dismissableMask>
+    <Form v-slot="$form" :resolver="createResolver" @submit="onFormSubmitCreate">
+      <div class="d-flex justify-content-center align-items-center flex-wrap w-100 p-2 px-4">
         <div class="w-100 d-flex align-items-center my-3">
-          <span class="mx-2 fs-5 font-bold"
-            >{{ $t("dash.storage.availability") }}
-          </span>
+          <span class="mx-2 fs-5 font-bold">{{ $t("dash.storage.availability") }} </span>
           <ToggleSwitch v-model="newProduct.availability" class="mx-2 d-flex" />
         </div>
         <!-- Product Name -->
-        <div
-          id="name-container"
-          class="section d-flex flex-wrap align-content-center w-100 my-3"
-        >
-          <div class="">
+        <div id="name-container" class="section d-flex flex-wrap align-content-center w-100 my-3">
+          <div>
             <FloatLabel variant="on">
-              <InputText
-                id="name-in-english"
-                name="name"
-                v-model="newProduct.name"
-                fluid
-              />
+              <InputText id="name-in-english" name="name" v-model="newProduct.name" fluid />
               <label for="name-in-english"
-                ><i class="fa-solid fa-heading mx-1" /><span class="mx-1">{{
-                  $t("dash.name_in_english")
-                }}</span></label
+                ><i class="fa-solid fa-heading mx-1" /><span class="mx-1">{{ $t("dash.name_in_english") }}</span></label
               >
             </FloatLabel>
-            <Message
-              v-if="$form.name?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              class="w-100"
-              >{{ $t($form.name.error?.message) }}</Message
-            >
+            <Message v-if="$form.name?.invalid" severity="error" size="small" variant="simple" class="w-100">{{ $t($form.name.error?.message) }}</Message>
           </div>
-          <div class="">
+          <div>
             <FloatLabel variant="on">
-              <InputText
-                v-model="newProduct.arName"
-                name="arName"
-                id="name-in-arabic"
-                fluid
-              />
+              <InputText v-model="newProduct.arName" name="arName" id="name-in-arabic" fluid />
               <label for="name-in-arabic"
-                ><i class="fa-solid fa-heading mx-1" /><span class="mx-1">{{
-                  $t("dash.name_in_arabic")
-                }}</span></label
+                ><i class="fa-solid fa-heading mx-1" /><span class="mx-1">{{ $t("dash.name_in_arabic") }}</span></label
               >
             </FloatLabel>
-            <Message
-              v-if="$form.arName?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              class="w-100"
-              >{{ $t($form.arName.error?.message) }}</Message
-            >
+            <Message v-if="$form.arName?.invalid" severity="error" size="small" variant="simple" class="w-100">{{ $t($form.arName.error?.message) }}</Message>
           </div>
         </div>
         <!-- description -->
-        <div
-          id="description-container"
-          class="section d-flex flex-wrap align-content-center w-100 my-3"
-        >
-          <div class="">
+        <div id="description-container" class="section d-flex flex-wrap align-content-center w-100 my-3">
+          <div>
             <FloatLabel variant="on">
-              <Textarea
-                id="description-in-english"
-                v-model="newProduct.description"
-                name="description"
-                rows="5"
-                cols="30"
-                style="resize: none"
-                fluid
-              />
+              <Textarea id="description-in-english" v-model="newProduct.description" name="description" rows="5" cols="30" style="resize: none" fluid />
               <label for="description-in-english"
-                ><i class="pi pi-pencil mx-1" /><span class="mx-1">{{
-                  $t("dash.description_in_english")
-                }}</span></label
+                ><i class="pi pi-pencil mx-1" /><span class="mx-1">{{ $t("dash.description_in_english") }}</span></label
               >
             </FloatLabel>
-            <Message
-              v-if="$form.description?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              class="w-100"
-              >{{ $t($form.description.error?.message) }}</Message
-            >
+            <Message v-if="$form.description?.invalid" severity="error" size="small" variant="simple" class="w-100">{{ $t($form.description.error?.message) }}</Message>
           </div>
-          <div class="">
+          <div>
             <FloatLabel variant="on">
-              <Textarea
-                id="description-in-arabic"
-                name="arDescription"
-                v-model="newProduct.arDescription"
-                rows="5"
-                cols="30"
-                style="resize: none"
-                fluid
-              />
+              <Textarea id="description-in-arabic" name="arDescription" v-model="newProduct.arDescription" rows="5" cols="30" style="resize: none" fluid />
               <label for="description-in-arabic"
-                ><i class="pi pi-pencil mx-1" /><span class="mx-1">{{
-                  $t("dash.description_in_arabic")
-                }}</span></label
+                ><i class="pi pi-pencil mx-1" /><span class="mx-1">{{ $t("dash.description_in_arabic") }}</span></label
               >
             </FloatLabel>
-            <Message
-              v-if="$form.arDescription?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              class="w-100"
-              >{{ $t($form.arDescription.error?.message) }}</Message
-            >
+            <Message v-if="$form.arDescription?.invalid" severity="error" size="small" variant="simple" class="w-100">{{ $t($form.arDescription.error?.message) }}</Message>
           </div>
         </div>
         <!-- Product Ingredients -->
-        <div
-          id="ingredients-container"
-          class="section d-flex flex-wrap align-content-center w-100 my-3"
-        >
-          <div class="">
+        <div id="ingredients-container" class="section d-flex flex-wrap align-content-center w-100 my-3">
+          <div>
             <FloatLabel variant="on">
-              <Textarea
-                id="ingredients-in-english"
-                name="ingredients"
-                v-model="newProduct.ingredients"
-                rows="5"
-                cols="30"
-                style="resize: none"
-                fluid
-              />
+              <Textarea id="ingredients-in-english" name="ingredients" v-model="newProduct.ingredients" rows="5" cols="30" style="resize: none" fluid />
               <label for="ingredients-in-english"
-                ><i class="fa-solid fa-receipt mx-1" /><span class="mx-1">{{
-                  $t("dash.storage.ingredients_in_english")
-                }}</span></label
+                ><i class="fa-solid fa-receipt mx-1" /><span class="mx-1">{{ $t("dash.storage.ingredients_in_english") }}</span></label
               >
             </FloatLabel>
-            <Message
-              v-if="$form.ingredients?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              class="w-100"
-              >{{ $t($form.ingredients.error?.message) }}</Message
-            >
+            <Message v-if="$form.ingredients?.invalid" severity="error" size="small" variant="simple" class="w-100">{{ $t($form.ingredients.error?.message) }}</Message>
           </div>
-          <div class="">
+          <div>
             <FloatLabel variant="on">
-              <Textarea
-                id="ingredients-in-arabic"
-                name="arIngredients"
-                v-model="newProduct.arIngredients"
-                rows="5"
-                cols="30"
-                style="resize: none"
-                fluid
-              />
+              <Textarea id="ingredients-in-arabic" name="arIngredients" v-model="newProduct.arIngredients" rows="5" cols="30" style="resize: none" fluid />
               <label for="ingredients-in-arabic"
-                ><i class="fa-solid fa-receipt mx-1" /><span class="mx-1">{{
-                  $t("dash.storage.ingredients_in_arabic")
-                }}</span></label
+                ><i class="fa-solid fa-receipt mx-1" /><span class="mx-1">{{ $t("dash.storage.ingredients_in_arabic") }}</span></label
               >
             </FloatLabel>
-            <Message
-              v-if="$form.arIngredients?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              class="w-100"
-              >{{ $t($form.arIngredients.error?.message) }}</Message
-            >
+            <Message v-if="$form.arIngredients?.invalid" severity="error" size="small" variant="simple" class="w-100">{{ $t($form.arIngredients.error?.message) }}</Message>
           </div>
         </div>
         <!-- Tips -->
-        <div
-          id="tips-container"
-          class="section d-flex flex-wrap align-content-center w-100 my-3"
-        >
-          <div class="">
+        <div id="tips-container" class="section d-flex flex-wrap align-content-center w-100 my-3">
+          <div>
             <FloatLabel variant="on">
-              <Textarea
-                id="tip-in-english"
-                name="tips"
-                v-model="newProduct.tips"
-                rows="5"
-                cols="30"
-                style="resize: none"
-                fluid
-              />
+              <Textarea id="tip-in-english" name="tips" v-model="newProduct.tips" rows="5" cols="30" style="resize: none" fluid />
               <label for="tip-in-english"
-                ><i class="fa-regular fa-thumbs-up mx-1" /><span class="mx-1">{{
-                  $t("dash.storage.tips_in_english")
-                }}</span></label
+                ><i class="fa-regular fa-thumbs-up mx-1" /><span class="mx-1">{{ $t("dash.storage.tips_in_english") }}</span></label
               >
             </FloatLabel>
-            <Message
-              v-if="$form.tips?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              class="w-100"
-              >{{ $t($form.tips.error?.message) }}</Message
-            >
+            <Message v-if="$form.tips?.invalid" severity="error" size="small" variant="simple" class="w-100">{{ $t($form.tips.error?.message) }}</Message>
           </div>
-          <div class="">
+          <div>
             <FloatLabel variant="on">
-              <Textarea
-                id="tip-in-arabic"
-                name="arTips"
-                v-model="newProduct.arTips"
-                rows="5"
-                cols="30"
-                style="resize: none"
-                fluid
-              />
+              <Textarea id="tip-in-arabic" name="arTips" v-model="newProduct.arTips" rows="5" cols="30" style="resize: none" fluid />
               <label for="tip-in-arabic"
-                ><i class="fa-regular fa-thumbs-up mx-1" /><span class="mx-1">{{
-                  $t("dash.storage.tips_in_arabic")
-                }}</span></label
+                ><i class="fa-regular fa-thumbs-up mx-1" /><span class="mx-1">{{ $t("dash.storage.tips_in_arabic") }}</span></label
               >
             </FloatLabel>
-            <Message
-              v-if="$form.arTips?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              class="w-100"
-              >{{ $t($form.arTips.error?.message) }}</Message
-            >
+            <Message v-if="$form.arTips?.invalid" severity="error" size="small" variant="simple" class="w-100">{{ $t($form.arTips.error?.message) }}</Message>
           </div>
         </div>
         <!-- Note -->
-        <div
-          id="notes-container"
-          class="section d-flex flex-wrap align-content-center w-100 my-3"
-        >
-          <div class="">
+        <div id="notes-container" class="section d-flex flex-wrap align-content-center w-100 my-3">
+          <div>
             <FloatLabel variant="on">
-              <Textarea
-                id="note-in-english"
-                name="notes"
-                v-model="newProduct.notes"
-                rows="5"
-                cols="30"
-                style="resize: none"
-                fluid
-              />
+              <Textarea id="note-in-english" name="notes" v-model="newProduct.notes" rows="5" cols="30" style="resize: none" fluid />
               <label for="note-in-english"
-                ><i class="fa-regular fa-clipboard mx-1" /><span class="mx-1">{{
-                  $t("dash.storage.notes_in_english")
-                }}</span></label
+                ><i class="fa-regular fa-clipboard mx-1" /><span class="mx-1">{{ $t("dash.storage.notes_in_english") }}</span></label
               >
             </FloatLabel>
-            <Message
-              v-if="$form.notes?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              class="w-100"
-              >{{ $t($form.notes.error?.message) }}</Message
-            >
+            <Message v-if="$form.notes?.invalid" severity="error" size="small" variant="simple" class="w-100">{{ $t($form.notes.error?.message) }}</Message>
           </div>
-          <div class="">
+          <div>
             <FloatLabel variant="on">
-              <Textarea
-                id="note-in-arabic"
-                name="arNotes"
-                v-model="newProduct.arNotes"
-                rows="5"
-                cols="30"
-                style="resize: none"
-                fluid
-              />
+              <Textarea id="note-in-arabic" name="arNotes" v-model="newProduct.arNotes" rows="5" cols="30" style="resize: none" fluid />
               <label for="note-in-arabic"
-                ><i class="fa-regular fa-clipboard mx-1" /><span class="mx-1">{{
-                  $t("dash.storage.notes_in_arabic")
-                }}</span></label
+                ><i class="fa-regular fa-clipboard mx-1" /><span class="mx-1">{{ $t("dash.storage.notes_in_arabic") }}</span></label
               >
             </FloatLabel>
-            <Message
-              v-if="$form.arNotes?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              class="w-100"
-              >{{ $t($form.arNotes.error?.message) }}</Message
-            >
+            <Message v-if="$form.arNotes?.invalid" severity="error" size="small" variant="simple" class="w-100">{{ $t($form.arNotes.error?.message) }}</Message>
           </div>
         </div>
         <!-- Category & subCategory & item -->
-        <div
-          id="ccq-container"
-          class="section-3 d-flex flex-wrap align-content-center w-100 my-3"
-        >
+        <div id="ccq-container" class="section-3 d-flex flex-wrap align-content-center w-100 my-3">
           <div class="mt-3">
-            <Select
-              v-model="newProduct.categoryId"
-              optionValue="id"
-              :options="categories"
-              optionLabel="title"
-              name="categories"
-              :placeholder="$t('dash.storage.select_a_category')"
-              class="w-100"
-              @change="filterSubCategory(newProduct.categoryId)"
-            />
-            <Message
-              v-if="$form.categories?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              class="w-100"
-              >{{ $t($form.categories.error?.message) }}</Message
-            >
+            <Select v-model="newProduct.categoryId" optionValue="id" :options="categories" optionLabel="title" name="categories" :placeholder="$t('dash.storage.select_a_category')" class="w-100" @change="filterSubCategory(newProduct.categoryId)" />
+            <Message v-if="$form.categories?.invalid" severity="error" size="small" variant="simple" class="w-100">{{ $t($form.categories.error?.message) }}</Message>
           </div>
           <div class="mt-3">
-            <Select
-              v-model="newProduct.subCategoryId"
-              optionValue="id"
-              :options="filteredSubCategories"
-              optionLabel="title"
-              name="sub_categories"
-              :placeholder="$t('dash.storage.select_a_sub-category')"
-              class="w-100"
-              v-if="newProduct.categoryId != null"
-              @change="filterItem(newProduct.subCategoryId)"
-            />
-            <Message
-              v-if="$form.sub_categories?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              class="w-100"
-              >{{ $t($form.sub_categories.error?.message) }}</Message
-            >
+            <Select v-model="newProduct.subCategoryId" optionValue="id" :options="filteredSubCategories" optionLabel="title" name="sub_categories" :placeholder="$t('dash.storage.select_a_sub-category')" class="w-100" v-if="newProduct.categoryId != null" @change="filterItem(newProduct.subCategoryId)" />
+            <Message v-if="$form.sub_categories?.invalid" severity="error" size="small" variant="simple" class="w-100">{{ $t($form.sub_categories.error?.message) }}</Message>
           </div>
           <div class="mt-3">
-            <Select
-              v-model="newProduct.itemsId"
-              optionValue="id"
-              :options="filteredItems"
-              optionLabel="title"
-              name="items"
-              :placeholder="$t('dash.storage.select_a_item')"
-              class="w-100"
-              v-if="newProduct.subCategoryId != null"
-            />
-            <Message
-              v-if="$form.items?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              class="w-100"
-              >{{ $t($form.items.error?.message) }}</Message
-            >
+            <Select v-model="newProduct.itemsId" optionValue="id" :options="filteredItems" optionLabel="title" name="items" :placeholder="$t('dash.storage.select_a_item')" class="w-100" v-if="newProduct.subCategoryId != null" />
+            <Message v-if="$form.items?.invalid" severity="error" size="small" variant="simple" class="w-100">{{ $t($form.items.error?.message) }}</Message>
           </div>
         </div>
         <!-- brand & quantity -->
-        <div
-          id="brnad-container"
-          class="section-3 d-flex flex-wrap align-content-center w-100 my-3"
-        >
+        <div id="brnad-container" class="section-3 d-flex flex-wrap align-content-center w-100 my-3">
           <div class="mt-3">
-            <Select
-              v-model="newProduct.brandId"
-              optionValue="id"
-              :options="brands"
-              optionLabel="title"
-              name="brands"
-              :placeholder="$t('dash.storage.select_a_brand')"
-              class="w-100"
-            />
-            <Message
-              v-if="$form.brands?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              class="w-100"
-              >{{ $t($form.brands.error?.message) }}</Message
-            >
+            <Select v-model="newProduct.brandId" optionValue="id" :options="brands" optionLabel="title" name="brands" :placeholder="$t('dash.storage.select_a_brand')" class="w-100" />
+            <Message v-if="$form.brands?.invalid" severity="error" size="small" variant="simple" class="w-100">{{ $t($form.brands.error?.message) }}</Message>
           </div>
           <div class="mt-3">
             <FloatLabel variant="on">
               <InputNumber id="quantity" v-model="newProduct.quantity" fluid />
               <label for="quantity"
-                ><i class="pi pi-calculator mx-1" /><span class="mx-1">{{
-                  $t("dash.storage.quantity")
-                }}</span></label
+                ><i class="pi pi-calculator mx-1" /><span class="mx-1">{{ $t("dash.storage.quantity") }}</span></label
               >
             </FloatLabel>
           </div>
           <div class="mt-3">
-            <Select
-              v-model="newProduct.gender"
-              :options="genders"
-              optionValue="value"
-              optionLabel="lable"
-              :placeholder="$t('dash.storage.select_a_gender')"
-              class="w-100"
-            />
+            <Select v-model="newProduct.gender" :options="genders" optionValue="value" optionLabel="lable" :placeholder="$t('dash.storage.select_a_gender')" class="w-100" />
           </div>
         </div>
         <!-- has proparety -->
-        <div
-          id="hasproparety-container"
-          class="d-flex flex-wrap align-items-center w-100 my-3"
-        >
-          <span class="mx-2 fs-5 font-bold"
-            >{{ $t("dash.storage.propareties") }}
-          </span>
+        <div id="hasproparety-container" class="d-flex flex-wrap align-items-center w-100 my-3">
+          <span class="mx-2 fs-5 font-bold">{{ $t("dash.storage.propareties") }} </span>
           <ToggleSwitch v-model="newProduct.hasProprety" class="mx-2 d-flex" />
         </div>
         <!-- Proparety -->
-        <div
-          id="propareties-container"
-          class="d-flex flex-wrap align-items-center w-100 my-3"
-          v-if="newProduct.hasProprety"
-        >
+        <div id="propareties-container" class="d-flex flex-wrap align-items-center w-100 my-3" v-if="newProduct.hasProprety">
           <div class="w-100">
             <i class="pi pi-plus mx-1 fs-5" />
-            <span class="mx-1 fs-5 font-bold"
-              >{{ $t("dash.storage.propareties") }}
-            </span>
+            <span class="mx-1 fs-5 font-bold">{{ $t("dash.storage.propareties") }} </span>
           </div>
-          <DataTable
-            :value="newProduct.propreties"
-            v-if="
-              newProduct.propreties != null && newProduct.propreties.length != 0
-            "
-            class="w-100"
-          >
+          <DataTable :value="newProduct.propreties" v-if="newProduct.propreties != null && newProduct.propreties.length != 0" class="w-100">
             <Column :header="$t('dash.storage.value')">
               <template #body="slotProps">
                 <InputText v-model="slotProps.data.value" fluid />
 
-                <Message
-                  v-if="proparetyValidationCreate.value[slotProps.index] != null"
-                  severity="error"
-                  size="small"
-                  variant="simple"
-                  class="w-100"
-                  >{{
-                    $t(proparetyValidationCreate.value[slotProps.index].message)
-                  }}</Message
-                >
+                <Message v-if="proparetyValidationCreate.value[slotProps.index] != null" severity="error" size="small" variant="simple" class="w-100">{{ $t(proparetyValidationCreate.value[slotProps.index].message) }}</Message>
               </template>
             </Column>
             <Column :header="$t('dash.storage.price')">
               <template #body="slotProps">
                 <InputText v-model="slotProps.data.price" fluid />
-                <Message
-                  v-if="proparetyValidationCreate.price[slotProps.index] != null"
-                  severity="error"
-                  size="small"
-                  variant="simple"
-                  class="w-100"
-                  >{{
-                    $t(proparetyValidationCreate.price[slotProps.index].message)
-                  }}</Message
-                >
+                <Message v-if="proparetyValidationCreate.price[slotProps.index] != null" severity="error" size="small" variant="simple" class="w-100">{{ $t(proparetyValidationCreate.price[slotProps.index].message) }}</Message>
               </template>
             </Column>
             <Column :header="$t('dash.storage.type')">
               <template #body>
-                <SelectButton
-                  v-model="proparetyTypeSelected"
-                  :options="proparetiesType"
-                />
+                <SelectButton v-model="proparetyTypeSelected" :options="proparetiesType" />
               </template>
             </Column>
             <Column>
               <template #body="slotProps">
-                <Button
-                  icon="pi pi-trash"
-                  severity="danger"
-                  variant="text"
-                  @click="newProduct.propreties.splice(slotProps.index, 1)"
-                />
+                <Button icon="pi pi-trash" severity="danger" variant="text" @click="newProduct.propreties.splice(slotProps.index, 1)" />
               </template>
             </Column>
           </DataTable>
@@ -624,117 +261,52 @@
                   value: null,
                   price: null,
                 })
-              "
-            ></Button>
+              "></Button>
           </div>
         </div>
         <!-- Payment -->
-        <div
-          id="payment-container"
-          class="section d-flex flex-wrap align-content-center w-100 my-3"
-        >
+        <div id="payment-container" class="section d-flex flex-wrap align-content-center w-100 my-3">
           <div v-if="!newProduct.hasProprety">
             <FloatLabel variant="on">
-              <InputNumber
-                id="price"
-                v-model="newProduct.price"
-                fluid
-                mode="currency"
-                currency="LYD"
-                locale="en-US"
-              />
+              <InputNumber id="price" v-model="newProduct.price" fluid mode="currency" currency="LYD" locale="en-US" />
               <label for="price"
-                ><i class="pi pi-dollar mx-1" /><span class="mx-1">{{
-                  $t("dash.storage.price")
-                }}</span></label
+                ><i class="pi pi-dollar mx-1" /><span class="mx-1">{{ $t("dash.storage.price") }}</span></label
               >
             </FloatLabel>
           </div>
           <div>
             <FloatLabel variant="on">
-              <InputNumber
-                id="discount"
-                v-model="newProduct.discount"
-                fluid
-                :max="100"
-                :min="0"
-                prefix="%"
-              />
+              <InputNumber id="discount" v-model="newProduct.discount" fluid :max="100" :min="0" prefix="%" />
               <label for="discount"
-                ><i class="pi pi-percentage mx-1" /><span class="mx-1">{{
-                  $t("dash.storage.discount")
-                }}</span></label
+                ><i class="pi pi-percentage mx-1" /><span class="mx-1">{{ $t("dash.storage.discount") }}</span></label
               >
             </FloatLabel>
           </div>
         </div>
         <!-- Product Images -->
-        <div
-          id="images-container"
-          class="d-flex flex-wrap justify-content-center align-content-center w-100 my-3"
-        >
+        <div id="images-container" class="d-flex flex-wrap justify-content-center align-content-center w-100 my-3">
           <div class="w-100">
             <i class="pi pi-images fs-5"></i>
-            <span class="fs-5 font-bold mx-2">{{
-              $t("dash.storage.prodcut_images")
-            }}</span>
+            <span class="fs-5 font-bold mx-2">{{ $t("dash.storage.prodcut_images") }}</span>
           </div>
           <div class="w-100 d-flex justify-content-center flex-wrap">
-            <div
-              v-for="(img, i) in newProduct.image"
-              :key="i"
-              class="image-container mx-3 my-2 relative"
-              @mouseenter="isImageHovered = true"
-              @mouseleave="isImageHovered = false"
-            >
-              <img
-                :src="trasformIntoURL(img)"
-                :alt="'image-' + i"
-                class="product-imgs"
-              />
-              <div
-                v-show="isImageHovered"
-                class="overlay-imgs d-flex justify-content-center align-items-center"
-              >
-                <i
-                  class="pi pi-eye mx-1 t fs-3 cursor-pointer"
-                  :style="{ color: 'var(--primary-color-500)' }"
-                  @click="viewImage(img)"
-                ></i>
+            <div v-for="(img, i) in newProduct.image" :key="i" class="image-container mx-3 my-2 relative" @mouseenter="isImageHovered = true" @mouseleave="isImageHovered = false">
+              <img :src="trasformIntoURL(img)" :alt="'image-' + i" class="product-imgs" />
+              <div v-show="isImageHovered" class="overlay-imgs d-flex justify-content-center align-items-center">
+                <i class="pi pi-eye mx-1 t fs-3 cursor-pointer" :style="{ color: 'var(--primary-color-500)' }" @click="viewImage(img)"></i>
 
-                <i
-                  class="pi pi-trash mx-1 text-danger fs-3 cursor-pointer"
-                  @click="newProduct.image.splice(i, 1)"
-                ></i>
+                <i class="pi pi-trash mx-1 text-danger fs-3 cursor-pointer" @click="newProduct.image.splice(i, 1)"></i>
               </div>
             </div>
           </div>
-          <div
-            class="d-flex justify-content-center align-items-center w-100 mt-4"
-          >
-            <input
-              ref="fileInputImage"
-              type="file"
-              accept="image/*"
-              class="d-none"
-              @change="addImageCreate"
-            />
-            <Button
-              icon="pi pi-plus"
-              :label="$t('dash.add')"
-              variant="text"
-              @click="fileInputImage.click()"
-            ></Button>
+          <div class="d-flex justify-content-center align-items-center w-100 mt-4">
+            <input ref="fileInputImage" type="file" accept="image/*" class="d-none" @change="addImageCreate" />
+            <Button icon="pi pi-plus" :label="$t('dash.add')" variant="text" @click="fileInputImage.click()"></Button>
           </div>
         </div>
       </div>
       <div class="d-flex justify-content-end">
-        <Button
-          icon="pi pi-plus"
-          :label="$t('dash.create')"
-          type="submit"
-          :loading="loadingData"
-        />
+        <Button icon="pi pi-plus" :label="$t('dash.create')" type="submit" :loading="loadingData" />
       </div>
     </Form>
   </Dialog>
@@ -744,495 +316,186 @@
     v-model:visible="editDialog"
     modal
     :header="`
-      ${$t('dash.edit')}  ${$t('dash.storage.product')}  '${
-      isEng ? currentData.name : currentData.arName
-    }'`"
+      ${$t('dash.edit')}  ${$t('dash.storage.product')}  '${isEng ? currentData.name : currentData.arName}'`"
     :style="{ width: '60rem' }"
     :dir="isEng ? 'ltr' : 'rtl'"
-  >
+    dismissableMask>
     <Form v-slot="$form" :resolver="editResolver" @submit="onFormSubmitEdit">
-      <div
-        class="d-flex justify-content-center align-items-center flex-wrap w-100 p-2 px-4"
-      >
+      <div class="d-flex justify-content-center align-items-center flex-wrap w-100 p-2 px-4">
         <div class="w-100 d-flex align-items-center my-3">
-          <span class="mx-2 fs-5 font-bold"
-            >{{ $t("dash.storage.availability") }}
-          </span>
-          <ToggleSwitch
-            v-model="currentData.availability"
-            class="mx-2 d-flex"
-          />
+          <span class="mx-2 fs-5 font-bold">{{ $t("dash.storage.availability") }} </span>
+          <ToggleSwitch v-model="currentData.availability" class="mx-2 d-flex" />
         </div>
         <!-- Product Name -->
-        <div
-          id="name-container"
-          class="section d-flex flex-wrap align-content-center w-100 my-3"
-        >
-          <div class="">
+        <div id="name-container" class="section d-flex flex-wrap align-content-center w-100 my-3">
+          <div>
             <FloatLabel variant="on">
-              <InputText
-                v-model="currentData.name"
-                id="name-in-english"
-                name="name"
-                fluid
-              />
+              <InputText v-model="currentData.name" id="name-in-english" name="name" fluid />
               <label for="name-in-english"
-                ><i class="fa-solid fa-heading mx-1" /><span class="mx-1">{{
-                  $t("dash.name_in_english")
-                }}</span></label
+                ><i class="fa-solid fa-heading mx-1" /><span class="mx-1">{{ $t("dash.name_in_english") }}</span></label
               >
             </FloatLabel>
-            <Message
-              v-if="$form.name?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              class="w-100"
-              >{{ $t($form.name.error?.message) }}</Message
-            >
+            <Message v-if="$form.name?.invalid" severity="error" size="small" variant="simple" class="w-100">{{ $t($form.name.error?.message) }}</Message>
           </div>
-          <div class="">
+          <div>
             <FloatLabel variant="on">
-              <InputText
-                v-model="currentData.arName"
-                id="name-in-arabic"
-                name="arName"
-                fluid
-              />
+              <InputText v-model="currentData.arName" id="name-in-arabic" name="arName" fluid />
               <label for="name-in-arabic"
-                ><i class="fa-solid fa-heading mx-1" /><span class="mx-1">{{
-                  $t("dash.name_in_arabic")
-                }}</span></label
+                ><i class="fa-solid fa-heading mx-1" /><span class="mx-1">{{ $t("dash.name_in_arabic") }}</span></label
               >
             </FloatLabel>
-            <Message
-              v-if="$form.arName?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              class="w-100"
-              >{{ $t($form.arName.error?.message) }}</Message
-            >
+            <Message v-if="$form.arName?.invalid" severity="error" size="small" variant="simple" class="w-100">{{ $t($form.arName.error?.message) }}</Message>
           </div>
         </div>
         <!-- description -->
-        <div
-          id="description-container"
-          class="section d-flex flex-wrap align-content-center w-100 my-3"
-        >
-          <div class="">
+        <div id="description-container" class="section d-flex flex-wrap align-content-center w-100 my-3">
+          <div>
             <FloatLabel variant="on">
-              <Textarea
-                id="description-in-english"
-                name="description"
-                rows="5"
-                cols="30"
-                style="resize: none"
-                v-model="currentData.description"
-                fluid
-              />
+              <Textarea id="description-in-english" name="description" rows="5" cols="30" style="resize: none" v-model="currentData.description" fluid />
               <label for="description-in-english"
-                ><i class="pi pi-pencil mx-1" /><span class="mx-1">{{
-                  $t("dash.description_in_english")
-                }}</span></label
+                ><i class="pi pi-pencil mx-1" /><span class="mx-1">{{ $t("dash.description_in_english") }}</span></label
               >
             </FloatLabel>
-            <Message
-              v-if="$form.description?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              class="w-100"
-              >{{ $t($form.description.error?.message) }}</Message
-            >
+            <Message v-if="$form.description?.invalid" severity="error" size="small" variant="simple" class="w-100">{{ $t($form.description.error?.message) }}</Message>
           </div>
-          <div class="">
+          <div>
             <FloatLabel variant="on">
-              <Textarea
-                id="description-in-arabic"
-                name="arDescription"
-                rows="5"
-                cols="30"
-                style="resize: none"
-                v-model="currentData.arDescription"
-                fluid
-              />
+              <Textarea id="description-in-arabic" name="arDescription" rows="5" cols="30" style="resize: none" v-model="currentData.arDescription" fluid />
               <label for="description-in-arabic"
-                ><i class="pi pi-pencil mx-1" /><span class="mx-1">{{
-                  $t("dash.description_in_arabic")
-                }}</span></label
+                ><i class="pi pi-pencil mx-1" /><span class="mx-1">{{ $t("dash.description_in_arabic") }}</span></label
               >
             </FloatLabel>
-            <Message
-              v-if="$form.arDescription?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              class="w-100"
-              >{{ $t($form.arDescription.error?.message) }}</Message
-            >
+            <Message v-if="$form.arDescription?.invalid" severity="error" size="small" variant="simple" class="w-100">{{ $t($form.arDescription.error?.message) }}</Message>
           </div>
         </div>
         <!-- Product Ingredients -->
-        <div
-          id="ingredients-container"
-          class="section d-flex flex-wrap align-content-center w-100 my-3"
-        >
-          <div class="">
+        <div id="ingredients-container" class="section d-flex flex-wrap align-content-center w-100 my-3">
+          <div>
             <FloatLabel variant="on">
-              <Textarea
-                id="ingredients-in-english"
-                name="ingredients"
-                v-model="currentData.ingredients"
-                rows="5"
-                cols="30"
-                style="resize: none"
-                fluid
-              />
+              <Textarea id="ingredients-in-english" name="ingredients" v-model="currentData.ingredients" rows="5" cols="30" style="resize: none" fluid />
               <label for="ingredients-in-english"
-                ><i class="fa-solid fa-receipt mx-1" /><span class="mx-1">{{
-                  $t("dash.storage.ingredients_in_english")
-                }}</span></label
+                ><i class="fa-solid fa-receipt mx-1" /><span class="mx-1">{{ $t("dash.storage.ingredients_in_english") }}</span></label
               >
             </FloatLabel>
-            <Message
-              v-if="$form.ingredients?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              class="w-100"
-              >{{ $t($form.ingredients.error?.message) }}</Message
-            >
+            <Message v-if="$form.ingredients?.invalid" severity="error" size="small" variant="simple" class="w-100">{{ $t($form.ingredients.error?.message) }}</Message>
           </div>
-          <div class="">
+          <div>
             <FloatLabel variant="on">
-              <Textarea
-                id="ingredients-in-arabic"
-                name="arIngredients"
-                v-model="currentData.arIngredients"
-                rows="5"
-                cols="30"
-                style="resize: none"
-                fluid
-              />
+              <Textarea id="ingredients-in-arabic" name="arIngredients" v-model="currentData.arIngredients" rows="5" cols="30" style="resize: none" fluid />
               <label for="ingredients-in-arabic"
-                ><i class="fa-solid fa-receipt mx-1" /><span class="mx-1">{{
-                  $t("dash.storage.ingredients_in_arabic")
-                }}</span></label
+                ><i class="fa-solid fa-receipt mx-1" /><span class="mx-1">{{ $t("dash.storage.ingredients_in_arabic") }}</span></label
               >
             </FloatLabel>
-            <Message
-              v-if="$form.arIngredients?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              class="w-100"
-              >{{ $t($form.arIngredients.error?.message) }}</Message
-            >
+            <Message v-if="$form.arIngredients?.invalid" severity="error" size="small" variant="simple" class="w-100">{{ $t($form.arIngredients.error?.message) }}</Message>
           </div>
         </div>
         <!-- Tips -->
-        <div
-          id="tips-container"
-          class="section d-flex flex-wrap align-content-center w-100 my-3"
-        >
-          <div class="">
+        <div id="tips-container" class="section d-flex flex-wrap align-content-center w-100 my-3">
+          <div>
             <FloatLabel variant="on">
-              <Textarea
-                id="tip-in-english"
-                name="tips"
-                v-model="currentData.tips"
-                rows="5"
-                cols="30"
-                style="resize: none"
-                fluid
-              />
+              <Textarea id="tip-in-english" name="tips" v-model="currentData.tips" rows="5" cols="30" style="resize: none" fluid />
               <label for="tip-in-english"
-                ><i class="fa-regular fa-thumbs-up mx-1" /><span class="mx-1">{{
-                  $t("dash.storage.tips_in_english")
-                }}</span></label
+                ><i class="fa-regular fa-thumbs-up mx-1" /><span class="mx-1">{{ $t("dash.storage.tips_in_english") }}</span></label
               >
             </FloatLabel>
-            <Message
-              v-if="$form.tips?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              class="w-100"
-              >{{ $t($form.tips.error?.message) }}</Message
-            >
+            <Message v-if="$form.tips?.invalid" severity="error" size="small" variant="simple" class="w-100">{{ $t($form.tips.error?.message) }}</Message>
           </div>
-          <div class="">
+          <div>
             <FloatLabel variant="on">
-              <Textarea
-                id="tip-in-arabic"
-                name="arTips"
-                v-model="currentData.arTips"
-                rows="5"
-                cols="30"
-                style="resize: none"
-                fluid
-              />
+              <Textarea id="tip-in-arabic" name="arTips" v-model="currentData.arTips" rows="5" cols="30" style="resize: none" fluid />
               <label for="tip-in-arabic"
-                ><i class="fa-regular fa-thumbs-up mx-1" /><span class="mx-1">{{
-                  $t("dash.storage.tips_in_arabic")
-                }}</span></label
+                ><i class="fa-regular fa-thumbs-up mx-1" /><span class="mx-1">{{ $t("dash.storage.tips_in_arabic") }}</span></label
               >
             </FloatLabel>
-            <Message
-              v-if="$form.arTips?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              class="w-100"
-              >{{ $t($form.arTips.error?.message) }}</Message
-            >
+            <Message v-if="$form.arTips?.invalid" severity="error" size="small" variant="simple" class="w-100">{{ $t($form.arTips.error?.message) }}</Message>
           </div>
         </div>
         <!-- Note -->
-        <div
-          id="notes-container"
-          class="section d-flex flex-wrap align-content-center w-100 my-3"
-        >
-          <div class="">
+        <div id="notes-container" class="section d-flex flex-wrap align-content-center w-100 my-3">
+          <div>
             <FloatLabel variant="on">
-              <Textarea
-                id="note-in-english"
-                name="notes"
-                v-model="currentData.notes"
-                rows="5"
-                cols="30"
-                style="resize: none"
-                fluid
-              />
+              <Textarea id="note-in-english" name="notes" v-model="currentData.notes" rows="5" cols="30" style="resize: none" fluid />
               <label for="note-in-english"
-                ><i class="fa-regular fa-thumbs-up mx-1" /><span class="mx-1">{{
-                  $t("dash.storage.notes_in_english")
-                }}</span></label
+                ><i class="fa-regular fa-thumbs-up mx-1" /><span class="mx-1">{{ $t("dash.storage.notes_in_english") }}</span></label
               >
             </FloatLabel>
-            <Message
-              v-if="$form.notes?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              class="w-100"
-              >{{ $t($form.notes.error?.message) }}</Message
-            >
+            <Message v-if="$form.notes?.invalid" severity="error" size="small" variant="simple" class="w-100">{{ $t($form.notes.error?.message) }}</Message>
           </div>
-          <div class="">
+          <div>
             <FloatLabel variant="on">
-              <Textarea
-                id="note-in-arabic"
-                name="arNotes"
-                v-model="currentData.arNotes"
-                rows="5"
-                cols="30"
-                style="resize: none"
-                fluid
-              />
+              <Textarea id="note-in-arabic" name="arNotes" v-model="currentData.arNotes" rows="5" cols="30" style="resize: none" fluid />
               <label for="note-in-arabic"
-                ><i class="fa-regular fa-thumbs-up mx-1" /><span class="mx-1">{{
-                  $t("dash.storage.notes_in_arabic")
-                }}</span></label
+                ><i class="fa-regular fa-thumbs-up mx-1" /><span class="mx-1">{{ $t("dash.storage.notes_in_arabic") }}</span></label
               >
             </FloatLabel>
-            <Message
-              v-if="$form.arNotes?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              class="w-100"
-              >{{ $t($form.arNotes.error?.message) }}</Message
-            >
+            <Message v-if="$form.arNotes?.invalid" severity="error" size="small" variant="simple" class="w-100">{{ $t($form.arNotes.error?.message) }}</Message>
           </div>
         </div>
         <!-- Category & subCategory & item -->
-        <div
-          id="ccq-container"
-          class="section-3 d-flex flex-wrap align-content-center w-100 my-3"
-        >
+        <div id="ccq-container" class="section-3 d-flex flex-wrap align-content-center w-100 my-3">
           <div class="mt-3">
-            <Select
-              v-model="currentData.category.id"
-              :options="categories"
-              optionLabel="title"
-              optionValue="id"
-              name="categories"
-              :placeholder="$t('dash.storage.select_a_category')"
-              class="w-100"
-              @change="filterSubCategory(currentData.category.id)"
-            />
-            <Message
-              v-if="$form.categories?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              class="w-100"
-              >{{ $t($form.categories.error?.message) }}</Message
-            >
+            <Select v-model="currentData.category.id" :options="categories" optionLabel="title" optionValue="id" name="categories" :placeholder="$t('dash.storage.select_a_category')" class="w-100" @change="filterSubCategory(currentData.category.id)" />
+            <Message v-if="$form.categories?.invalid" severity="error" size="small" variant="simple" class="w-100">{{ $t($form.categories.error?.message) }}</Message>
           </div>
           <div class="mt-3">
-            <Select
-              v-model="currentData.subCategory.id"
-              :options="filteredSubCategories"
-              optionLabel="title"
-              optionValue="id"
-              name="sub_categories"
-              :placeholder="$t('dash.storage.select_a_sub-category')"
-              class="w-100"
-              v-if="currentData.category != null"
-              @change="filterItem(currentData.subCategory.id)"
-            />
-            <Message
-              v-if="$form.sub_categories?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              class="w-100"
-              >{{ $t($form.sub_categories.error?.message) }}</Message
-            >
+            <Select v-model="currentData.subCategory.id" :options="filteredSubCategories" optionLabel="title" optionValue="id" name="sub_categories" :placeholder="$t('dash.storage.select_a_sub-category')" class="w-100" v-if="currentData.category != null" @change="filterItem(currentData.subCategory.id)" />
+            <Message v-if="$form.sub_categories?.invalid" severity="error" size="small" variant="simple" class="w-100">{{ $t($form.sub_categories.error?.message) }}</Message>
           </div>
           <div class="mt-3">
-            <Select
-              v-model="currentData.itemsCategory.id"
-              :options="filteredItems"
-              optionLabel="title"
-              optionValue="id"
-              name="items"
-              :placeholder="$t('dash.storage.select_a_item')"
-              class="w-100"
-              v-if="currentData.subCategory != null"
-            />
-            <Message
-              v-if="$form.items?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              class="w-100"
-              >{{ $t($form.items.error?.message) }}</Message
-            >
+            <Select v-model="currentData.itemsCategory.id" :options="filteredItems" optionLabel="title" optionValue="id" name="items" :placeholder="$t('dash.storage.select_a_item')" class="w-100" v-if="currentData.subCategory != null" />
+            <Message v-if="$form.items?.invalid" severity="error" size="small" variant="simple" class="w-100">{{ $t($form.items.error?.message) }}</Message>
           </div>
         </div>
         <!-- brand & quantity -->
-        <div
-          id="brnad-container"
-          class="section-3 d-flex flex-wrap align-content-center w-100 my-3"
-        >
+        <div id="brnad-container" class="section-3 d-flex flex-wrap align-content-center w-100 my-3">
           <div class="mt-3">
-            <Select
-              v-model="currentData.brand.id"
-              :options="brands"
-              optionLabel="title"
-              optionValue="id"
-              name="brands"
-              :placeholder="$t('dash.storage.select_a_brand')"
-              class="w-100"
-            />
-            <Message
-              v-if="$form.brands?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              class="w-100"
-              >{{ $t($form.brands.error?.message) }}</Message
-            >
+            <Select v-model="currentData.brand.id" :options="brands" optionLabel="title" optionValue="id" name="brands" :placeholder="$t('dash.storage.select_a_brand')" class="w-100" />
+            <Message v-if="$form.brands?.invalid" severity="error" size="small" variant="simple" class="w-100">{{ $t($form.brands.error?.message) }}</Message>
           </div>
           <div class="mt-3">
             <FloatLabel variant="on">
               <InputNumber id="quantity" v-model="currentData.quantity" fluid />
               <label for="quantity"
-                ><i class="pi pi-calculator mx-1" /><span class="mx-1">{{
-                  $t("dash.storage.quantity")
-                }}</span></label
+                ><i class="pi pi-calculator mx-1" /><span class="mx-1">{{ $t("dash.storage.quantity") }}</span></label
               >
             </FloatLabel>
           </div>
           <div class="mt-3">
-            <Select
-              v-model="currentData.gender"
-              :options="genders"
-              optionValue="value"
-              optionLabel="lable"
-              :placeholder="$t('dash.storage.select_a_gender')"
-              class="w-100"
-            />
+            <Select v-model="currentData.gender" :options="genders" optionValue="value" optionLabel="lable" :placeholder="$t('dash.storage.select_a_gender')" class="w-100" />
           </div>
         </div>
         <!-- has proparety -->
-        <div
-          id="hasproparety-container"
-          class="d-flex flex-wrap align-items-center w-100 my-3"
-        >
-          <span class="mx-2 fs-5 font-bold"
-            >{{ $t("dash.storage.propareties") }}
-          </span>
+        <div id="hasproparety-container" class="d-flex flex-wrap align-items-center w-100 my-3">
+          <span class="mx-2 fs-5 font-bold">{{ $t("dash.storage.propareties") }} </span>
           <ToggleSwitch v-model="currentData.hasProprety" class="mx-2 d-flex" />
         </div>
         <!-- Proparety -->
-        <div
-          id="propareties-container"
-          class="d-flex flex-wrap align-items-center w-100 my-3"
-          v-if="currentData.hasProprety"
-        >
+        <div id="propareties-container" class="d-flex flex-wrap align-items-center w-100 my-3" v-if="currentData.hasProprety">
           <div class="w-100">
             <i class="pi pi-plus mx-1 fs-5" />
-            <span class="mx-1 fs-5 font-bold">{{
-              $t("dash.storage.propareties")
-            }}</span>
+            <span class="mx-1 fs-5 font-bold">{{ $t("dash.storage.propareties") }}</span>
           </div>
-          <DataTable
-            :value="currentData.propreties"
-            v-if="currentData.propreties.length > 0"
-            class="w-100"
-          >
+          <DataTable :value="currentData.propreties" v-if="currentData.propreties.length > 0" class="w-100">
             <Column :header="$t('dash.storage.value')">
               <template #body="slotProps">
                 <InputText v-model="slotProps.data.value" fluid />
-                <Message
-                  v-if="proparetyValidationEdit.value[slotProps.index] != null"
-                  severity="error"
-                  size="small"
-                  variant="simple"
-                  class="w-100"
-                  >{{
-                    $t(proparetyValidationEdit.value[slotProps.index].message)
-                  }}</Message
-                >
+                <Message v-if="proparetyValidationEdit.value[slotProps.index] != null" severity="error" size="small" variant="simple" class="w-100">{{ $t(proparetyValidationEdit.value[slotProps.index].message) }}</Message>
               </template>
             </Column>
             <Column :header="$t('dash.storage.price')">
               <template #body="slotProps">
                 <InputText v-model="slotProps.data.price" fluid />
-                 <Message
-                  v-if="proparetyValidationEdit.price[slotProps.index] != null"
-                  severity="error"
-                  size="small"
-                  variant="simple"
-                  class="w-100"
-                  >{{
-                    $t(proparetyValidationEdit.price[slotProps.index].message)
-                  }}</Message
-                >
+                <Message v-if="proparetyValidationEdit.price[slotProps.index] != null" severity="error" size="small" variant="simple" class="w-100">{{ $t(proparetyValidationEdit.price[slotProps.index].message) }}</Message>
               </template>
             </Column>
             <Column :header="$t('dash.storage.type')">
               <template #body>
-                <SelectButton
-                  v-model="proparetyTypeSelected"
-                  :options="proparetiesType"
-                  @change="changeProparety(proparetyTypeSelected)"
-                />
+                <SelectButton v-model="proparetyTypeSelected" :options="proparetiesType" @change="changeProparety(proparetyTypeSelected)" />
               </template>
             </Column>
             <Column>
               <template #body="slotProps">
-                <Button
-                  icon="pi pi-trash"
-                  severity="danger"
-                  variant="text"
-                  @click="deleteProparetyEdit(slotProps.index)"
-                />
+                <Button icon="pi pi-trash" severity="danger" variant="text" @click="deleteProparetyEdit(slotProps.index)" />
               </template>
             </Column>
           </DataTable>
@@ -1248,172 +511,69 @@
                   value: null,
                   price: null,
                 })
-              "
-            ></Button>
+              "></Button>
           </div>
         </div>
         <!-- Payment -->
-        <div
-          id="payment-container"
-          class="section d-flex flex-wrap align-content-center w-100 my-3"
-        >
+        <div id="payment-container" class="section d-flex flex-wrap align-content-center w-100 my-3">
           <div v-if="!currentData.hasProprety">
             <FloatLabel variant="on">
-              <InputNumber
-                id="price"
-                v-model="currentData.price"
-                fluid
-                mode="currency"
-                currency="LYD"
-                locale="en-US"
-              />
+              <InputNumber id="price" v-model="currentData.price" fluid mode="currency" currency="LYD" locale="en-US" />
               <label for="price"
-                ><i class="pi pi-dollar mx-1" /><span class="mx-1">{{
-                  $t("dash.storage.price")
-                }}</span></label
+                ><i class="pi pi-dollar mx-1" /><span class="mx-1">{{ $t("dash.storage.price") }}</span></label
               >
             </FloatLabel>
           </div>
           <div>
             <FloatLabel variant="on">
-              <InputNumber
-                id="discount"
-                v-model="currentData.discount"
-                fluid
-                :max="100"
-                :min="0"
-                prefix="%"
-              />
+              <InputNumber id="discount" v-model="currentData.discount" fluid :max="100" :min="0" prefix="%" />
               <label for="discount"
-                ><i class="pi pi-percentage mx-1" /><span class="mx-1">{{
-                  $t("dash.storage.discount")
-                }}</span></label
+                ><i class="pi pi-percentage mx-1" /><span class="mx-1">{{ $t("dash.storage.discount") }}</span></label
               >
             </FloatLabel>
           </div>
         </div>
         <!-- Product Images -->
-        <div
-          id="images-container"
-          class="d-flex flex-wrap justify-content-center align-content-center w-100 my-3"
-        >
+        <div id="images-container" class="d-flex flex-wrap justify-content-center align-content-center w-100 my-3">
           <div class="w-100">
             <i class="pi pi-images fs-5"></i>
-            <span class="fs-5 font-bold mx-2">{{
-              $t("dash.storage.prodcut_images")
-            }}</span>
+            <span class="fs-5 font-bold mx-2">{{ $t("dash.storage.prodcut_images") }}</span>
           </div>
           <div class="w-100 d-flex justify-content-center flex-wrap">
-            <div
-              v-for="(img, i) in currentData.images"
-              :key="i"
-              class="image-container mx-3 my-2 relative"
-              @mouseenter="isImageHovered = true"
-              @mouseleave="isImageHovered = false"
-            >
-              <img
-                :src="'http://26.77.145.88:3333/images/' + img.image"
-                :alt="'image-' + i"
-                class="product-imgs"
-                v-if="img.id"
-              />
+            <div v-for="(img, i) in currentData.images" :key="i" class="image-container mx-3 my-2 relative" @mouseenter="isImageHovered = true" @mouseleave="isImageHovered = false">
+              <img :src="'http://publicws.spectrum.e-ibtikar.com/images/' + img.image" :alt="'image-' + i" class="product-imgs" v-if="img.id" />
 
-              <img
-                :src="trasformIntoURL(img)"
-                :alt="'image-' + i"
-                class="product-imgs"
-                v-else
-              />
-              <div
-                v-show="isImageHovered"
-                class="overlay-imgs d-flex justify-content-center align-items-center"
-              >
-                <i
-                  class="pi pi-eye mx-1 t fs-3 cursor-pointer"
-                  :style="{ color: 'var(--primary-color-500)' }"
-                  @click="viewImage(img)"
-                ></i>
+              <img :src="trasformIntoURL(img)" :alt="'image-' + i" class="product-imgs" v-else />
+              <div v-show="isImageHovered" class="overlay-imgs d-flex justify-content-center align-items-center">
+                <i class="pi pi-eye mx-1 t fs-3 cursor-pointer" :style="{ color: 'var(--primary-color-500)' }" @click="viewImage(img)"></i>
 
-                <i
-                  class="pi pi-trash mx-1 text-danger fs-3 cursor-pointer"
-                  @click="deleteImageEdit(i)"
-                ></i>
+                <i class="pi pi-trash mx-1 text-danger fs-3 cursor-pointer" @click="deleteImageEdit(i)"></i>
               </div>
             </div>
           </div>
-          <div
-            class="d-flex justify-content-center align-items-center w-100 mt-4"
-          >
-            <input
-              ref="fileInputImage"
-              type="file"
-              accept="image/*"
-              class="d-none"
-              @change="addImageEdit"
-            />
-            <Button
-              icon="pi pi-plus"
-              :label="$t('dash.add')"
-              variant="text"
-              @click="fileInputImage.click()"
-            ></Button>
+          <div class="d-flex justify-content-center align-items-center w-100 mt-4">
+            <input ref="fileInputImage" type="file" accept="image/*" class="d-none" @change="addImageEdit" />
+            <Button icon="pi pi-plus" :label="$t('dash.add')" variant="text" @click="fileInputImage.click()"></Button>
           </div>
         </div>
       </div>
       <div class="d-flex justify-content-end">
-        <Button
-          icon="pi pi-file-arrow-up"
-          :label="$t('dash.update')"
-          severity="info"
-          type="submit"
-          :loading="loadingData"
-        ></Button>
+        <Button icon="pi pi-file-arrow-up" :label="$t('dash.update')" severity="info" type="submit" :loading="loadingData"></Button>
       </div>
     </Form>
   </Dialog>
   <!-- Delete Dialog -->
-  <Dialog
-    v-model:visible="deleteDialog"
-    :modal="true"
-    :closable="true"
-    :header="`${$t('dash.delete')}  ${$t('dash.storage.product')} '${
-      isEng ? currentData.name : currentData.arName
-    }'`"
-    :style="{ width: '35rem' }"
-    :breakpoints="{ '1199px': '85vw', '575px': '95vw' }"
-    :dir="isEng ? 'ltr' : 'rtl'"
-  >
-    <span v-if="isEng">
-      {{ $t("dash.delete_question1") }} {{ $t("dash.storage.product") }} "{{
-        currentData.title
-      }}" {{ $t("dash.?") }}</span
-    >
-    <span v-else>
-      {{ $t("dash.delete_question1") }} {{ $t("dash.storage.product") }} "{{
-        currentData.arName
-      }}" {{ $t("dash.?") }}</span
-    >
+  <Dialog v-model:visible="deleteDialog" :modal="true" :closable="true" :header="`${$t('dash.delete')}  ${$t('dash.storage.product')} '${isEng ? currentData.name : currentData.arName}'`" :style="{ width: '35rem' }" :breakpoints="{ '1199px': '85vw', '575px': '95vw' }" :dir="isEng ? 'ltr' : 'rtl'" dismissableMask>
+    <span v-if="isEng"> {{ $t("dash.delete_question1") }} {{ $t("dash.storage.product") }} "{{ currentData.title }}" {{ $t("dash.?") }}</span>
+    <span v-else> {{ $t("dash.delete_question1") }} {{ $t("dash.storage.product") }} "{{ currentData.arName }}" {{ $t("dash.?") }}</span>
     <template #footer>
-      <Button
-        icon="pi pi-trash"
-        :label="$t('dash.delete')"
-        severity="danger"
-        @click="deleteProduct"
-        :loading="loadingData"
-      ></Button>
+      <Button icon="pi pi-trash" :label="$t('dash.delete')" severity="danger" @click="deleteProduct" :loading="loadingData"></Button>
     </template>
   </Dialog>
   <!-- Show Image Dialog -->
-  <Dialog
-    v-model:visible="showImageDialog"
-    modal
-    :style="{ width: '70%', height: '80%' }"
-    pt:header="p-0 pb-1 justify-content-end"
-    pt:content="p-0"
-    pt:pcclosebutton:severity="danger"
-  >
+  <Dialog v-model:visible="showImageDialog" modal :style="{ width: '70%', height: '80%' }" pt:header="p-0 pb-1 justify-content-end" pt:content="p-0" pt:pcclosebutton:severity="danger" dismissableMask>
     <img
-      :src="'http://26.77.145.88:3333/images/' + currentImage.image"
+      :src="'http://publicws.spectrum.e-ibtikar.com/images/' + currentImage.image"
       alt="Full Image"
       class="rounded-bottom-3"
       :style="{
@@ -1422,8 +582,7 @@
         backgroundAttachment: 'fixed',
         backgroundSize: 'cover',
       }"
-      v-if="currentImage.id"
-    />
+      v-if="currentImage.id" />
     <img
       :src="trasformIntoURL(currentImage)"
       alt="Full Image"
@@ -1434,46 +593,8 @@
         backgroundAttachment: 'fixed',
         backgroundSize: 'cover',
       }"
-      v-else
-    />
+      v-else />
   </Dialog>
-  <!-- Add Size Dialog -->
-  <!-- <Dialog
-    v-model:visible="addSizeDialog"
-    :modal="true"
-    :closable="true"
-    :header="'Add size #' + currentData.id + ' product'"
-    :style="{ width: '35rem' }"
-    :breakpoints="{ '1199px': '85vw', '575px': '95vw' }"
-    pt:content="d-flex justify-content-center"
-  >
-    <div
-      class="width-70 d-flex justify-content-center flex-wrap align-items-center"
-    >
-      <div class="w-100 d-flex justify-content-center m-3">
-        <InputNumber
-          ref="addSizeInput"
-          :defaultValue="currentData.quantity"
-          v-model="newProduct.quantity"
-          showButtons
-          buttonLayout="horizontal"
-          :step="1"
-          :min="0"
-          fluid
-        >
-          <template #incrementbuttonicon>
-            <span class="pi pi-plus" />
-          </template>
-          <template #decrementbuttonicon>
-            <span class="pi pi-minus" />
-          </template>
-        </InputNumber>
-      </div>
-    </div>
-    <template #footer>
-      <Button icon="pi pi-plus" label="Add" @click="addSize"></Button>
-    </template>
-  </Dialog> -->
 </template>
 
 <script setup>
@@ -1739,17 +860,19 @@ function trasformIntoURL(file) {
   return URL.createObjectURL(file);
 }
 function addImageCreate(event) {
-  const file = event.target.files?.[0]; 
+  const file = event.target.files?.[0];
+  console.log(file);
   if (!file) {
     console.error("No file selected");
     return;
   }
-
+  // newProduct.value.image.push(file);
   const reader = new FileReader();
   reader.onload = () => {
     newProduct.value.image.push(file);
+    console.log(newProduct.value.image);
   };
-  // reader.readAsDataURL(file);
+  reader.readAsDataURL(file);
 }
 function addImageEdit(event) {
   const file = event.target.files?.[0];
@@ -1794,14 +917,10 @@ function getProducts() {
     });
 }
 function filterSubCategory(categoryId) {
-  filteredSubCategories.value = subCategories.value.filter(
-    (item) => item.category.id == categoryId
-  );
+  filteredSubCategories.value = subCategories.value.filter((item) => item.category.id == categoryId);
 }
 function filterItem(subCategoryId) {
-  filteredItems.value = items.value.filter(
-    (item) => item.sub_categories.id == subCategoryId
-  );
+  filteredItems.value = items.value.filter((item) => item.sub_categories.id == subCategoryId);
 }
 function createProduct() {
   loadingData.value = true;
@@ -1954,25 +1073,17 @@ const createResolver = ({ values }) => {
   }
 
   if (!values.description) {
-    errors.description = [
-      { message: "dash.description_in_english_is_required" },
-    ];
+    errors.description = [{ message: "dash.description_in_english_is_required" }];
   }
   if (!values.arDescription) {
-    errors.arDescription = [
-      { message: "dash.description_in_arabic_is_required" },
-    ];
+    errors.arDescription = [{ message: "dash.description_in_arabic_is_required" }];
   }
 
   if (!values.ingredients) {
-    errors.ingredients = [
-      { message: "dash.storage.ingredients_in_english_is_required" },
-    ];
+    errors.ingredients = [{ message: "dash.storage.ingredients_in_english_is_required" }];
   }
   if (!values.arIngredients) {
-    errors.arIngredients = [
-      { message: "dash.storage.ingredients_in_arabic_is_required" },
-    ];
+    errors.arIngredients = [{ message: "dash.storage.ingredients_in_arabic_is_required" }];
   }
 
   if (!values.tips) {
@@ -1990,14 +1101,10 @@ const createResolver = ({ values }) => {
   }
 
   if (!values.categories) {
-    errors.categories = [
-      { message: "dash.storage.you_must_select_one_of_cateogries" },
-    ];
+    errors.categories = [{ message: "dash.storage.you_must_select_one_of_cateogries" }];
   }
   if (!values.sub_categories) {
-    errors.sub_categories = [
-      { message: "dash.storage.you_must_select_one_of_sub-categories" },
-    ];
+    errors.sub_categories = [{ message: "dash.storage.you_must_select_one_of_sub-categories" }];
   }
   if (!values.items) {
     errors.items = [{ message: "dash.storage.you_must_select_one_of_items" }];
@@ -2019,25 +1126,17 @@ const editResolver = () => {
   }
 
   if (!currentData.value.description) {
-    errors.description = [
-      { message: "dash.description_in_english_is_required" },
-    ];
+    errors.description = [{ message: "dash.description_in_english_is_required" }];
   }
   if (!currentData.value.arDescription) {
-    errors.arDescription = [
-      { message: "dash.description_in_arabic_is_required" },
-    ];
+    errors.arDescription = [{ message: "dash.description_in_arabic_is_required" }];
   }
 
   if (!currentData.value.ingredients) {
-    errors.ingredients = [
-      { message: "dash.storage.ingredients_in_english_is_required" },
-    ];
+    errors.ingredients = [{ message: "dash.storage.ingredients_in_english_is_required" }];
   }
   if (!currentData.value.arIngredients) {
-    errors.arIngredients = [
-      { message: "dash.storage.ingredients_in_arabic_is_required" },
-    ];
+    errors.arIngredients = [{ message: "dash.storage.ingredients_in_arabic_is_required" }];
   }
 
   if (!currentData.value.tips) {
@@ -2055,14 +1154,10 @@ const editResolver = () => {
   }
 
   if (!currentData.value.category) {
-    errors.categories = [
-      { message: "dash.storage.you_must_select_one_of_cateogries" },
-    ];
+    errors.categories = [{ message: "dash.storage.you_must_select_one_of_cateogries" }];
   }
   if (!currentData.value.subCategory) {
-    errors.sub_categories = [
-      { message: "dash.storage.you_must_select_one_of_sub-categories" },
-    ];
+    errors.sub_categories = [{ message: "dash.storage.you_must_select_one_of_sub-categories" }];
   }
   if (!currentData.value.itemsCategory) {
     errors.items = [{ message: "dash.storage.you_must_select_one_of_items" }];

@@ -20,7 +20,7 @@ import MyPreset from "./assets/js/createPreset.js";
 
 //Axios
 import axios from "axios";
-axios.defaults.baseURL = "http://26.77.145.88:3333/api/";
+axios.defaults.baseURL = "https://publicws.spectrum.e-ibtikar.com/api/";
 
 //i18n
 import i18n from "./i18n";

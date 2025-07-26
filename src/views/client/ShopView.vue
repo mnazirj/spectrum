@@ -1,7 +1,7 @@
 <template>
   <div class="container">
-    <div class="d-flex">
-      <div class="col-3">
+    <div class="d-flex flex-lg-row flex-md-row flex-column">
+      <div class="col-lg-3 col-md-3 col-12">
         <div class="d-flex flex-column gap-5">
           <div v-if="false">
             <Panel :header="$route.params.brand" toggleable>
@@ -17,10 +17,10 @@
           </div>
           <!-- Filter -->
           <div>
-            <h5>Refine</h5>
-            <Accordion class="border" value="0">
-              <AccordionPanel value="0">
-                <AccordionHeader class="text-black">Brands</AccordionHeader>
+            <h5>{{ $t("client.shop.refine") }}</h5>
+            <Accordion class="border" :value="route.params.type == 'brand' ? '1' : '0'">
+              <AccordionPanel value="0" v-if="route.params.type != 'brand'">
+                <AccordionHeader class="text-black">{{ $t("client.shop.brands") }}</AccordionHeader>
                 <AccordionContent>
                   <div>
                     <div class="d-flex flex-column gap-2 mb-2" v-for="brand in Brands" :key="brand">
@@ -28,7 +28,7 @@
                         {{ brand.group }}
                       </h5>
                       <div class="flex items-center gap-2" v-for="item in brand.list" :key="item">
-                        <Checkbox v-model="selectedBrand" :name="item" :value="item" />
+                        <Checkbox v-model="selectedBrand" :value="item" />
                         <label> {{ item }} </label>
                       </div>
                     </div>
@@ -36,47 +36,48 @@
                 </AccordionContent>
               </AccordionPanel>
               <AccordionPanel value="1">
-                <AccordionHeader class="text-black">Size</AccordionHeader>
+                <AccordionHeader class="text-black">{{ $t("client.shop.size") }}</AccordionHeader>
                 <AccordionContent>
                   <div class="flex items-center gap-2" v-for="size in uniqueSizes" :key="size">
-                    <Checkbox v-model="selectedSize" :name="item" :value="String(size)" />
-                    <label> {{ size }}ml </label>
+                    <Checkbox v-model="selectedSize" :value="String(size)" />
+                    <label v-if="size >= 0"> {{ size }}ml </label>
+                    <label v-else> {{ size }} </label>
                   </div>
                 </AccordionContent>
               </AccordionPanel>
               <AccordionPanel value="2">
-                <AccordionHeader class="text-black">Gender</AccordionHeader>
+                <AccordionHeader class="text-black">{{ $t("client.shop.gender") }}</AccordionHeader>
                 <AccordionContent>
                   <div class="flex items-center gap-2">
-                    <Checkbox v-model="selectedGender" :name="item" value="male" />
-                    <label> Male </label>
+                    <Checkbox v-model="selectedGender" value="male" />
+                    <label> {{ $t("client.shop.male") }} </label>
                   </div>
                   <div class="flex items-center gap-2">
-                    <Checkbox v-model="selectedGender" :name="item" value="female" />
-                    <label> Female </label>
+                    <Checkbox v-model="selectedGender" value="female" />
+                    <label> {{ $t("client.shop.female") }} </label>
                   </div>
                 </AccordionContent>
               </AccordionPanel>
 
               <AccordionPanel value="3">
-                <AccordionHeader class="text-black">Price</AccordionHeader>
+                <AccordionHeader class="text-black">{{ $t("client.shop.price") }}</AccordionHeader>
                 <AccordionContent>
                   <div>
                     <h5 class="text-center">
                       {{ priceRange }}
                     </h5>
-                    <Slider v-model="priceRange" range :max="500" />
+                    <Slider v-model="priceRange" range :max="maxPrice" />
                   </div>
                 </AccordionContent>
               </AccordionPanel>
 
               <AccordionPanel value="4">
-                <AccordionHeader class="text-black">Reviews</AccordionHeader>
+                <AccordionHeader class="text-black">{{ $t("client.shop.review") }}</AccordionHeader>
                 <AccordionContent>
                   <div class="d-flex flex-column gap-3">
                     <div v-for="item in ratingRange" :key="item">
                       <div class="d-flex gap-2">
-                        <Checkbox v-model="selectedStars" :name="item" :value="item" />
+                        <Checkbox v-model="selectedStars" :value="item" />
                         <Rating v-model="ratingRange[item - 1]" readonly />
                       </div>
                     </div>
@@ -88,10 +89,13 @@
         </div>
       </div>
       <!-- Product -->
-      <div class="col">
+      <div class="col-lg-9 col-md-9 col-12">
         <div class="ms-3">
-          <h1 class="font-avg text-uppercase">{{ $route.params.brand }}</h1>
-          <h5 class="w-75">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Error esse corporis at in, assumenda debitis architecto perferendis provident distinctio ipsam!</h5>
+          <h1 class="font-avg text-uppercase" v-if="$i18n.locale == 'en'">{{ Products?.[0]?.category?.title }}</h1>
+          <h1 class="font-avg text-uppercase" v-else>{{ Products?.[0]?.category?.arName }}</h1>
+          <h5 class="w-75 product-desc" id="categorydesc" v-if="$i18n.locale == 'en'">{{ Products?.[0]?.category?.description }}</h5>
+          <h5 class="w-75 product-desc" id="categorydesc" v-else>{{ Products?.[0]?.category?.arDescription }}</h5>
+          <a v-if="Products?.[0]?.category?.description" href="#" id="readmore" class="font-avg text-decoration-none text-black text-uppercase" @click="readMore()">{{ $t("client.shop.seemore") }}</a>
         </div>
 
         <ProductCard :products="filterProduct" :hasSlider="false" />
@@ -112,10 +116,11 @@ import Slider from "primevue/slider";
 import ProductCard from "@/components/client/ProductCard.vue";
 import useProductFilters from "@/composables/productFilter.js";
 import Rating from "primevue/rating";
-
-import { computed, onMounted, ref } from "vue";
-import router from "@/router";
+import { computed, onBeforeMount, onBeforeUpdate, onMounted, onUpdated, ref, watch } from "vue";
+import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 import axios from "axios";
+const route = useRoute();
+const router = useRouter();
 const ingredient = ref("");
 const items = ref([
   {
@@ -147,7 +152,8 @@ const items = ref([
 ]);
 const selectedBrand = ref({});
 const selectedSize = ref([]);
-const priceRange = ref([0, 500]);
+const priceRange = ref([]);
+const maxPrice = ref(0);
 const selectedGender = ref([]);
 const selectedStars = ref([]);
 
@@ -166,21 +172,51 @@ const ratingRange = ref([1, 2, 3, 4, 5]);
 const Products = ref([]);
 const filterProduct = useProductFilters(Products, filters);
 
-onMounted(() => {
-  console.log(router.currentRoute.value.params.brand);
-  axios.get("homepage/getProducts/" + router.currentRoute.value.params.brand).then((res) => {
-    // Products.value = res.data;
-    Products.value = res.data;
-    axios.get("group").then((res) => {
-      if (res.status == 200) {
-        Brands.value = res.data;
-      }
-    });
-  });
+watch(
+  () => route.params.slug,
+  (newSlug, oldSlug) => {
+    if (newSlug !== oldSlug) {
+      priceRange.value = [];
+      fetchData();
+    }
+  }
+);
+
+onBeforeMount(() => {
+  fetchData();
 });
+
+function readMore() {
+  document.getElementById("categorydesc").classList.remove("product-desc");
+  document.getElementById("readmore").classList.toggle("hidden");
+}
+
+function fetchData() {
+  axios
+    .get("homepage/getProducts/" + route.params.type + "/" + route.params.slug)
+    .then((res) => {
+      Products.value = res.data.products;
+      if (Products.value.length <= 0) {
+        maxPrice.value = 0;
+        priceRange.value.push(0, 0);
+      } else {
+        priceRange.value.push(res.data.minPrice, res.data.maxPrice);
+        maxPrice.value = res.data.maxPrice;
+        axios.get("group").then((res) => {
+          if (res.status == 200) {
+            Brands.value = res.data;
+          }
+        });
+      }
+    })
+    .catch((err) => {
+      router.push({ name: "notFound" });
+    });
+}
 // Create unique size list
 const uniqueSizes = computed(() => {
-  const sizes = Products.value.flatMap((product) => product.propreties.map((p) => p.value));
-  return [...new Set(sizes)];
+  const sizes = Products.value?.flatMap((product) => product.propreties.map((p) => p.value));
+  const unique = [...new Set(sizes)];
+  return unique.sort((a, b) => a - b);
 });
 </script>

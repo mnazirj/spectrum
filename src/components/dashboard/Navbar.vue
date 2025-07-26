@@ -1,36 +1,16 @@
 <template>
   <div>
-    <nav
-      id="nav"
-      class="navbar bg-main text-white border-bottom-3 pb-0"
-      :style="{ maxWidth: '100%' }"
-    >
+    <nav id="nav" class="navbar bg-main text-white border-bottom-3 pb-0" :style="{ maxWidth: '100%' }">
       <div class="container-fluid px-2 m-0">
         <div id="content-container" class="w-100 d-flex justify-content-center">
           <!-- Start -->
           <div id="start" class="width-20 d-flex">
-            <div
-              :class="[
-                'w-100 h-100 d-flex align-items-center flex-wrap',
-                isEng ? 'ps-4' : 'pe-4',
-              ]"
-              :style="{}"
-            >
-              <div
-                :class="[
-                  'w-50 d-flex align-item-center pt-1',
-                  isEng ? 'ms-4' : 'me-4',
-                ]"
-              >
-                <img
-                  src="@/assets/images/dashboard/logo.svg"
-                  :style="{ width: '5rem', height: '4rem' }"
-                />
+            <div :class="['w-100 h-100 d-flex align-items-center flex-wrap', isEng ? 'ps-4' : 'pe-4']" :style="{}">
+              <div :class="['w-50 d-flex align-item-center pt-1', isEng ? 'ms-4' : 'me-4']">
+                <img src="@/assets/images/dashboard/logo.svg" :style="{ width: '5rem', height: '4rem' }" />
               </div>
               <div class="w-100 d-flex align-item-center">
-                <p :style="{ fontSize: '35px', fontFamily: 'Rokkitt' }">
-                  Spectrum
-                </p>
+                <p :style="{ fontSize: '35px', fontFamily: 'Rokkitt' }">Spectrum</p>
               </div>
             </div>
           </div>
@@ -40,9 +20,7 @@
             <div class="w-100 d-flex flex-wrap align-items-center" :style="{}">
               <div class="w-100 d-flex justify-content-end">
                 <div class="width-80 d-flex justify-content-end">
-                  <div
-                    class="d-flex flex-wrap align-items-center w-75 text-nowrap"
-                  >
+                  <div class="d-flex flex-wrap align-items-center w-75 text-nowrap">
                     <div class="mx-2 fs-4">
                       <i class="pi pi-calendar mx-1 fs-4"></i>
                       {{ currentDate }}
@@ -52,32 +30,11 @@
                       {{ currentTime }}
                     </div>
                   </div>
-                  <div
-                    id="language"
-                    :class="[
-                      'd-flex justify-content-end align-items-center',
-                      isEng ? 'pe-4' : 'ps-4',
-                    ]"
-                    :style="{ minWidth: '10rem' }"
-                  >
-                    <Select
-                      v-model="languageSelected"
-                      placeholder="Language"
-                      :options="languages"
-                      optionLabel="name"
-                      fluid
-                      @change="changeLocation"
-                    >
+                  <div id="language" :class="['d-flex justify-content-end align-items-center', isEng ? 'pe-4' : 'ps-4']" :style="{ minWidth: '10rem' }">
+                    <Select v-model="languageSelected" placeholder="Language" :options="languages" optionLabel="name" fluid @change="changeLocation">
                       <template #value="slotProps">
                         <div v-if="slotProps.value" class="flex items-center">
-                          <img
-                            :alt="slotProps.value.label"
-                            :src="slotProps.value.flag"
-                            :class="[
-                              `flag flag-${slotProps.value.code.toLowerCase()} mx-2`,
-                            ]"
-                            style="width: 18px"
-                          />
+                          <img :alt="slotProps.value.label" :src="slotProps.value.flag" :class="[`flag flag-${slotProps.value.code.toLowerCase()} mx-2`]" style="width: 18px" />
                           <div>{{ slotProps.value.name }}</div>
                         </div>
                         <span v-else>
@@ -85,21 +42,8 @@
                         </span>
                       </template>
                       <template #option="slotProps">
-                        <div
-                          :class="[
-                            'flex items-center w-100',
-                            isEng ? 'me-2' : 'ms-2',
-                          ]"
-                          :dir="isEng ? 'ltr' : 'rtl'"
-                        >
-                          <img
-                            :alt="slotProps.option.label"
-                            :src="slotProps.option.flag"
-                            :class="[
-                              `flag flag-${slotProps.option.code.toLowerCase()} mx-2`,
-                            ]"
-                            style="width: 18px"
-                          />
+                        <div :class="['flex items-center w-100', isEng ? 'me-2' : 'ms-2']" :dir="isEng ? 'ltr' : 'rtl'">
+                          <img :alt="slotProps.option.label" :src="slotProps.option.flag" :class="[`flag flag-${slotProps.option.code.toLowerCase()} mx-2`]" style="width: 18px" />
                           <div>{{ slotProps.option.name }}</div>
                         </div>
                       </template>
@@ -110,50 +54,18 @@
                   </div>
                 </div>
               </div>
-              <div
-                class="w-100 d-flex justify-content-center align-items-center"
-              >
-                <IconField class="width-60">
-                  <InputIcon class="pi pi-search" />
-                  <InputText
-                    v-model="searchValue"
-                    placeholder="Search"
-                    class="w-100"
-                  />
-                </IconField>
-              </div>
             </div>
           </div>
 
           <!-- End -->
           <div id="end" :class="['width-20 d-flex', isEng ? 'ltr' : 'rtl']">
-            <div
-              class="w-100 d-flex justify-content-center align-items-center"
-              :style="{}"
-            >
-              <div
-                class="width-60 d-flex justify-content-center flex-wrap relative"
-              >
+            <div class="w-100 d-flex justify-content-center align-items-center" :style="{}">
+              <div class="width-60 d-flex justify-content-center flex-wrap relative">
                 <div class="w-100 d-flex justify-content-center">
-                  <img
-                    :src="user.img"
-                    :style="{ width: '5rem', height: '5rem' }"
-                    class="rounded-circle cursor-pointer"
-                    @click="visibleDrawer = true"
-                  />
-                </div>
-                <div class="w-100 d-flex justify-content-center">
-                  <span
-                    class="fs-5 w-100 text-center cursor-pointer"
-                    @click="visibleDrawer = true"
-                    >{{ user.username }}</span
-                  >
+                  <span class="fs-5 w-100 text-center cursor-pointer" @click="visibleDrawer = true">{{ user.firstName }} {{ user.lastName }}</span>
                 </div>
               </div>
-              <div
-                id="notification-container"
-                class="d-flex justify-content-center h-100"
-              >
+              <div id="notification-container" class="d-flex justify-content-center h-100">
                 <div
                   class="relative mt-2"
                   :style="{
@@ -164,167 +76,37 @@
                     right: '0px',
                     top: '0px',
                   }"
-                  @click="toggleNotification"
-                >
-                  <Button
-                    severity="secondary"
-                    icon="pi pi-bell"
-                    rounded
-                    raised
-                    class="rounded-circle"
-                  />
-                  <span
-                    class="bg-danger rounded-circle d-flex justify-content-center align-items-center cursor-pointer"
-                    :style="{
-                      position: 'absolute',
-                      right: '-7px',
-                      top: '-7px',
-                      width: '1.55rem',
-                      height: '1.5rem',
-                    }"
-                    >{{ unreadedNotifi.length }}</span
-                  >
-                </div>
+                  @click="toggleNotification"></div>
               </div>
             </div>
           </div>
-          <Drawer
-            v-model:visible="visibleDrawer"
-            header="My Account"
-            :position="isEng ? 'right' : 'left'"
-          >
+          <Drawer v-model:visible="visibleDrawer" header="My Account" :position="isEng ? 'right' : 'left'">
             <div class="d-flex flex-column justify-content-between h-100">
-              <div
-                class="d-flex flex-wrap justify-content-center align-items-center w-100"
-              >
-                <div
-                  class="w-100 d-flex flex-wrap justify-content-center align-items-center"
-                >
-                  <div class="w-100 d-flex justify-content-center">
-                    <img
-                      :src="user.img"
-                      :style="{ width: '8rem', height: '8rem' }"
-                      class="rounded-circle"
-                    />
-                  </div>
+              <div class="d-flex flex-wrap justify-content-center align-items-center w-100">
+                <div class="w-100 d-flex flex-wrap justify-content-center align-items-center">
                   <div class="w-100 text-center my-2">
-                    <span class="fs-4 font-bold font-monospace">{{
-                      user.username
-                    }}</span>
+                    <span class="fs-4 font-bold font-monospace">{{ user.firstName }} {{ user.lastName }}</span>
                   </div>
                 </div>
-                <div
-                  class="w-100 d-flex flex-wrap justify-content-center align-items-center mt-3"
-                >
-                  <ul class="list-group w-100">
-                    <router-link
-                      class="list-group-item my-2 rounded-2 border-0 text-nowrap cursor-pointer p-1 py-2 text-center fs-5"
-                      :to="{ name: 'Profile' }"
-                    >
+                <div class="w-100 d-flex flex-wrap justify-content-center align-items-center mt-3">
+                  <!-- <ul class="list-group w-100">
+                    <router-link class="list-group-item my-2 rounded-2 border-0 text-nowrap cursor-pointer p-1 py-2 text-center fs-5" :to="{ name: 'Profile' }">
                       <i class="pi pi-user mx-2" />
                       <span>My Account</span>
                     </router-link>
-                    <router-link
-                      class="list-group-item my-2 rounded-2 border-0 text-nowrap cursor-pointer p-1 py-2 text-center fs-5"
-                      :to="{ name: 'Notification' }"
-                    >
-                      <i class="pi pi-bell mx-2" />
-                      <span>Notifications</span>
-                    </router-link>
-                    <router-link
-                      class="list-group-item my-2 rounded-2 border-0 text-nowrap cursor-pointer p-1 py-2 text-center fs-5"
-                      :to="{ name: 'Settings' }"
-                    >
+
+                    <router-link class="list-group-item my-2 rounded-2 border-0 text-nowrap cursor-pointer p-1 py-2 text-center fs-5" :to="{ name: 'Settings' }">
                       <i class="pi pi-cog mx-2" />
                       <span>Settings</span>
                     </router-link>
-                  </ul>
+                  </ul> -->
                 </div>
               </div>
-              <div
-                class="d-flex flex-wrap justify-content-center align-items-center w-100"
-              >
-                <Button
-                  icon="pi pi-sign-out"
-                  class="fs-5"
-                  label="Logout"
-                  fluid
-                  @click="logout"
-                />
+              <div class="d-flex flex-wrap justify-content-center align-items-center w-100">
+                <Button icon="pi pi-sign-out" class="fs-5" label="Logout" fluid @click="logout" />
               </div>
             </div>
           </Drawer>
-
-          <Popover
-            ref="op"
-            pt:root="border-3 rounded-2 text-white"
-            pt:content="p-0 text-dark"
-          >
-            <div
-              class="d-flex justify-content-center align-items-center flex-wrap"
-              :style="{ width: '25rem', height: '30rem' }"
-            >
-              <div
-                class="d-flex flex-wrap justify-content-center align-items-center w-100 overflow-y-auto"
-                :style="{ height: '90%' }"
-              >
-                <router-link
-                  id="notification"
-                  class="d-flex align-content-center flex-wrap w-100 font-monospace m-1 p-1 rounded-2 cursor-pointer"
-                  v-for="notification in lastNotifi"
-                  :key="notification.id"
-                  :to="{ name: 'Notification' }"
-                >
-                  <div
-                    id="header"
-                    class="w-100 d-flex justify-content-between align-items-center"
-                  >
-                    <span class="font-bold fs-5">{{ notification.title }}</span>
-                    <div>
-                      <i
-                        :class="[
-                          'pi pi-circle-fill mx-1',
-                          notification.status == 'unreaded'
-                            ? 'text-danger'
-                            : 'text-success',
-                        ]"
-                        :style="{ fontSize: '0.8rem' }"
-                      />
-                      <span
-                        :style="{ fontSize: '0.8rem' }"
-                        class="capitalize"
-                        >{{ notification.status }}</span
-                      >
-                    </div>
-                  </div>
-                  <!-- <div id="body" class="w-100 fs-6">
-                    <span>{{ notification.description }}</span>
-                  </div> -->
-                  <div
-                    id="footer"
-                    class="w-100 font-bold d-flex justify-content-between text-muted"
-                  >
-                    <span :style="{ fontSize: '0.9rem' }"
-                      >From: {{ notification.from.username }}</span
-                    >
-                    <span :style="{ fontSize: '0.9rem' }">{{
-                      timeAgo(notification.date)
-                    }}</span>
-                  </div>
-                </router-link>
-              </div>
-              <div
-                id="show-more-container"
-                class="d-flex justify-content-center align-items-center w-100 border-top-1 text-decoration-underline fs-5"
-                :style="{ height: '10%', background: '#f9f9f9', color: '#222' }"
-              >
-                <router-link :to="{ name: 'Notification' }"
-                  >Show More</router-link
-                >
-              </div>
-            </div>
-          </Popover>
-          <!--  -->
         </div>
       </div>
     </nav>
@@ -342,14 +124,7 @@ import Button from "primevue/button";
 import Drawer from "primevue/drawer";
 import axios from "axios";
 
-import {
-  computed,
-  onBeforeUnmount,
-  onMounted,
-  onBeforeMount,
-  ref,
-  defineProps,
-} from "vue";
+import { computed, onBeforeUnmount, onMounted, onBeforeMount, ref, defineProps } from "vue";
 import router from "@/router";
 
 // Props
@@ -390,10 +165,6 @@ onMounted(() => {
       flag: require("@/assets/images/dashboard/sa.svg"),
     };
   }
-
-  console.log(notifications.value[0].date);
-  console.log(unreadedNotifi.value);
-  console.log(lastNotifi.value);
 });
 onBeforeUnmount(() => {
   clearInterval(intervalId);
@@ -422,114 +193,12 @@ const op = ref();
 const visibleDrawer = ref(false);
 const user = ref({
   id: 1,
-  username: "Mohammad Mahmoud",
+  username: "Mohammad",
   email: "mohammad@test.com",
   img: require("@/assets/images/dashboard/user-img.jpeg"),
   birthday: "1919-7-25",
 });
-const notifications = ref([
-  {
-    id: 1,
-    from: {
-      id: 1,
-      email: "Mohammad GG",
-      username: "Mohammad",
-    },
-    title: "About dashboard",
-    description: "You should Doing some Edit on Comanies data",
-    date: new Date(2025, 5, 12, 10, 0, 0),
-    status: "unreaded",
-  },
-  {
-    id: 2,
-    from: {
-      id: 1,
-      email: "Mohammad GG",
-      username: "Mohammad",
-    },
-    title: "About dashboard",
-    description: "You should Doing some Edit on Comanies data",
-    date: new Date(2025, 4, 12, 10, 0, 0),
-    status: "unreaded",
-  },
-  {
-    id: 3,
-    from: {
-      id: 1,
-      email: "Mohammad GG",
-      username: "Mohammad",
-    },
-    title: "About dashboard",
-    description: "You should Doing some Edit on Comanies data",
-    date: new Date(2025, 3, 12, 10, 0, 0),
-    status: "readed",
-  },
-  {
-    id: 4,
-    from: {
-      id: 1,
-      email: "Mohammad GG",
-      username: "Mohammad",
-    },
-    title: "About dashboard",
-    description: "You should Doing some Edit on Comanies data",
-    date: new Date(2025, 1, 12, 10, 0, 0),
-    status: "unreaded",
-  },
-  {
-    id: 5,
-    from: {
-      id: 1,
-      email: "Mohammad GG",
-      username: "Mohammad",
-    },
-    title: "About dashboard",
-    description: "You should Doing some Edit on Comanies data",
-    date: new Date(2025, 0, 12, 10, 0, 0),
-    status: "unreaded",
-  },
-  {
-    id: 6,
-    from: {
-      id: 1,
-      email: "Mohammad GG",
-      username: "Mohammad",
-    },
-    title: "About dashboard",
-    description: "You should Doing some Edit on Comanies data",
-    date: new Date(2025, 5, 3, 9, 0, 0),
-    status: "unreaded",
-  },
-  {
-    id: 7,
-    from: {
-      id: 1,
-      email: "Mohammad GG",
-      username: "Mohammad",
-    },
-    title: "About dashboard",
-    description: "You should Doing some Edit on Comanies data",
-    date: new Date(2025, 5, 12, 10, 0, 0),
-    status: "unreaded",
-  },
-]);
 
-// Computed
-const unreadedNotifi = computed(() => {
-  return notifications.value.filter(
-    (notification) => notification.status == "unreaded"
-  );
-});
-const lastNotifi = computed(() => {
-  if (notifications.value.length > 5) {
-    let last5Noti = notifications.value.slice(
-      notifications.value.length - 5,
-      notifications.value.length
-    );
-    return last5Noti;
-  }
-  return notifications;
-});
 // Methods
 function updateTime() {
   const now = new Date();
@@ -540,9 +209,7 @@ function updateTime() {
     hour12: true,
   });
 }
-const toggleNotification = (event) => {
-  op.value.toggle(event);
-};
+
 function logout() {
   try {
     axios
@@ -570,23 +237,25 @@ function changeLocation() {
   localStorage.setItem("locale", languageSelected.value.code.toLowerCase());
   window.location.reload();
 }
-function timeAgo(notificationDate) {
-  const now = new Date();
-  const date = new Date(notificationDate);
-  const diffMs = date - now; // note: future date = positive
-  const diffSec = Math.floor(Math.abs(diffMs) / 1000);
-  const diffMin = Math.floor(diffSec / 60);
-  const diffHour = Math.floor(diffMin / 60);
-  const diffDay = Math.floor(diffHour / 24);
 
-  let result = "";
-  if (diffSec < 60) result = `${diffSec} seconds`;
-  else if (diffMin < 60) result = `${diffMin} minutes`;
-  else if (diffHour < 24) result = `${diffHour} hours`;
-  else result = `${diffDay} days`;
-
-  return diffMs < 0 ? `${result} ago` : `in ${result}`;
-}
+onMounted(() => {
+  axios
+    .post(
+      "auth/getUser",
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("_token")}`,
+        },
+      }
+    )
+    .then((res) => {
+      if (res.status == 200) {
+        user.value = res.data.user;
+        console.log(res.data);
+      }
+    });
+});
 </script>
 
 <style scoped>

@@ -2,6 +2,13 @@ import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
   {
+    path: "/:pathMatch(.*)*",
+    name: "notFound",
+    component: function () {
+      return import("@/views/errors/404.vue");
+    },
+  },
+  {
     path: "/",
     name: "home",
     component: function () {
@@ -9,74 +16,81 @@ const routes = [
     },
     beforeEnter: (to) => {
       if (to.path == "/") {
-        localStorage.getItem("locale") == "en" ? router.push("/en") : router.push("/ar");
+        router.push("/home");
       }
     },
     children: [
       {
-        path: ":lang",
-        name: "land",
+        path: "home",
+        name: "landing",
+
         component: function () {
           return import("../components/client/Home.vue");
         },
+      },
+
+      {
+        path: "signup",
+        name: "auth.signup",
+        beforeEnter: () => {
+          if (localStorage.getItem("_token") != null) {
+            router.push("/home");
+          }
+        },
+        component: function () {
+          return import("../views/client/auth/SignupView.vue");
+        },
+      },
+      {
+        path: "signin",
+        name: "auth.signin",
+        beforeEnter: () => {
+          if (localStorage.getItem("_token") != null) {
+            router.push("/home");
+          }
+        },
+        component: function () {
+          return import("../views/client/auth/SignInView.vue");
+        },
+      },
+      {
+        path: "shop/:type/:slug",
+        name: "shopping",
+        component: function () {
+          return import("../views/client/ShopView.vue");
+        },
+      },
+      {
+        path: "shop/product/:product",
+        name: "product.view",
+        component: function () {
+          return import("../views/client/ProductView.vue");
+        },
+      },
+      {
+        path: "client",
+        name: "clientarea",
+        beforeEnter: () => {
+          if (localStorage.getItem("_token") == null) {
+            router.push("/home");
+          }
+        },
         children: [
           {
-            path: "signup",
-            name: "auth.signup",
-            beforeEnter: () => {
-              if (localStorage.getItem("_token") != null) {
-                router.push("/en");
-              }
-            },
+            path: "home",
+            name: "clientarea.home",
             component: function () {
-              return import("../views/client/auth/SignupView.vue");
+              return import("../views/client/ClientAreaView.vue");
             },
-          },
-          {
-            path: "signin",
-            name: "auth.signin",
-            beforeEnter: () => {
-              if (localStorage.getItem("_token") != null) {
-                router.push("/en");
-              }
-            },
-            component: function () {
-              return import("../views/client/auth/SignInView.vue");
-            },
-          },
-          {
-            path: "shop/:brand",
-            name: "shopping",
-            component: function () {
-              return import("../views/client/ShopView.vue");
-            },
-          },
-          {
-            path: "shop/product/:product",
-            name: "product.new",
-            component: function () {
-              return import("../views/client/ProductView.vue");
-            },
-          },
-          {
-            path: "client",
-            name: "clientarea",
-            beforeEnter: () => {
-              if (localStorage.getItem("_token") == null) {
-                router.push("/en");
-              }
-            },
-            children: [
-              {
-                path: "home",
-                name: "clientarea.home",
-                component: function () {
-                  return import("../views/client/ClientAreaView.vue");
-                },
-              },
-            ],
           },
         ],
+      },
+      {
+        path: "checkout",
+        name: "checkout",
+        component: function () {
+          return import("../views/client/CheckOutView.vue");
+        },
       },
     ],
   },
@@ -91,12 +105,10 @@ const routes = [
     component: () => import("@/views/dashboard/DashboardView.vue"),
     beforeEnter: (to, from, next) => {
       if (to.name == "Dashboard") {
-        if(localStorage.getItem('_token')){
-           next({ name: "Overview" });
-        } else  {
-          
+        if (localStorage.getItem("_token")) {
+          next({ name: "Overview" });
+        } else {
         }
-       
       } else {
         next();
       }
